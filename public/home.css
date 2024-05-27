@@ -163,3 +163,55 @@ body {
 #sd-favorites:hover, #sd-people:hover {
     background-color: #505357;
 }
+
+#tp-up {
+    position: absolute;
+    transform: translate(0%, -50%);
+    top: 50%;
+    right: 225px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border-radius: 5px / 5px;
+    height: 40px;
+    width: 105px;
+    text-align: center;
+    transition: .25s;
+}
+
+#tp-up:hover {
+    background-color: #505357;
+}
+
+#tp-up > svg {
+    height: 20px;
+    width: 40px;
+    fill: lightgray;
+}
+
+#tp-up > span {
+    vertical-align: middle;
+    color: lightgray;
+    font-size: 18px;
+}
+
+#tp-admin {
+    position: absolute;
+    transform: translate(0%, -50%);
+    top: 50%;
+    right: 100px;
+    color: lightgray;
+    cursor: pointer;
+    display: grid;
+    align-items: center;
+    border-radius: 5px / 5px;
+    height: 40px;
+    width: 115px;
+    text-align: center;
+    transition: .25s;
+    justify-content: center;
+}
+
+#tp-admin:hover {
+    background-color: #505357;
+}
