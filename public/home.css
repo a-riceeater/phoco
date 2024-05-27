@@ -2,6 +2,7 @@
 
 :root {
     --back: #202123;
+    --select: #c8e4fc;
 }
 
 body {
@@ -330,4 +331,49 @@ body {
     width: 18px;
     fill: rgb(168, 166, 166);
     margin-right: 10px;
+}
+
+#left-pannel {
+    position: fixed;
+    left: 0;
+    top: 70px;
+    width: 220px;
+    height: calc(100% - 70px);
+    padding-top: 20px;
+    box-sizing: border-box;
+}
+
+.lp-op {
+    height: 52px;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding-left: 25px;
+    box-sizing: border-box;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    color: lightgray;
+}
+
+.lp-op > svg {
+    height: 25px;
+    width: 20px;
+    fill: lightgray;
+    vertical-align: middle;
+}
+
+.lp-op > span {
+    vertical-align: middle;
+    font-size: 17px;
+    margin-left: 10px;
+}
+
+.lp-op.selected {
+    background-color: var(--select);
+    color: black;
+}
+
+.lp-op.selected > svg {
+    fill: rgb(44, 44, 44);
 }
