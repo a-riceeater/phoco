@@ -103,39 +103,46 @@ function uploadFile(file) {
 document.querySelector('#tp-up').addEventListener('click', async () => {
     document.querySelector(".us-up").innerText = "0";
     document.querySelector(".us-fail").innerText = "0";
-    document.querySelector(".us-close").style.display = "none"
-    try {
-        const fileHandles = await window.showOpenFilePicker({
-            multiple: true, startIn: "pictures", types: [
-                {
-                    description: "Images",
-                    accept: {
-                        'image/*': [".png", ".gif", ".jpeg", ".jpg", ".cr2"]
-                    }
-                },
-                {
-                    description: "Videos",
-                    accept: {
-                        "video/*": [".avi", ".mp4", ".mov", ".mkv", ".webm"]
-                    }
-                }
-            ]
-        });
-        const files = await Promise.all(fileHandles.map(async (fileHandle) => {
-            const file = await fileHandle.getFile();
-            return file;
-        }));
+    document.querySelector(".us-close").style.display = "none";
 
-        document.querySelector("#upload-status").style.display = "block"
+    // Check if showOpenFilePicker is supported
+    if (window.showOpenFilePicker) {
+        try {
+            const fileHandles = await window.showOpenFilePicker({
+                multiple: true, startIn: "pictures", types: [
+                    {
+                        description: "Images",
+                        accept: {
+                            'image/*': [".png", ".gif", ".jpeg", ".jpg", ".cr2"]
+                        }
+                    },
+                    {
+                        description: "Videos",
+                        accept: {
+                            "video/*": [".avi", ".mp4", ".mov", ".mkv", ".webm"]
+                        }
+                    }
+                ]
+            });
+            const files = await Promise.all(fileHandles.map(async (fileHandle) => {
+                const file = await fileHandle.getFile();
+                return file;
+            }));
 
-        for (const file of files) {
-            await uploadFile(file);
+            document.querySelector("#upload-status").style.display = "block";
+
+            for (const file of files) {
+                await uploadFile(file);
+            }
+
+            document.querySelector(".us-t").innerText = "All Uploads Completed";
+            document.querySelector(".us-close").style.display = "flex";
+        } catch (err) {
+            console.error(err);
         }
-
-        document.querySelector(".us-t").innerText = "All Uploads Completed"
-        document.querySelector(".us-close").style.display = "flex"
-    } catch (err) {
-        console.error(err);
+    } else {
+        // Fallback to file input for browsers that do not support showOpenFilePicker
+        document.querySelector('#file-input').click();
     }
 });
 
@@ -143,3 +150,16 @@ document.querySelector(".us-close").addEventListener("click", (e) => {
     e.target.style.display = "none"
     document.querySelector("#upload-status").style.display = "none"
 })
+
+document.querySelector('#file-input').addEventListener('change', async (event) => {
+    const files = Array.from(event.target.files);
+
+    document.querySelector("#upload-status").style.display = "block";
+
+    for (const file of files) {
+        await uploadFile(file);
+    }
+
+    document.querySelector(".us-t").innerText = "All Uploads Completed";
+    document.querySelector(".us-close").style.display = "flex";
+});
