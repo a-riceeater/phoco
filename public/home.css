@@ -380,6 +380,7 @@ body {
 
 #upload-status {
     position: fixed;
+    display: none;
     z-index: 4;
     right: 25px;
     bottom: 25px;
@@ -426,4 +427,23 @@ body {
     color: lightgray;
     line-height: 1.5em;
     margin-left: 9px;
+}
+
+.us-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    user-select: none;
+    background-color: rgb(211, 211, 211, 0.5);
+    border-radius: 100%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 10px;
+    font-weight: bold;
+    display: none;
 }

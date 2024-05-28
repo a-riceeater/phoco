@@ -103,6 +103,7 @@ function uploadFile(file) {
 document.querySelector('#tp-up').addEventListener('click', async () => {
     document.querySelector(".us-up").innerText = "0";
     document.querySelector(".us-fail").innerText = "0";
+    document.querySelector(".us-close").style.display = "none"
     try {
         const fileHandles = await window.showOpenFilePicker({
             multiple: true, startIn: "pictures", types: [
@@ -125,10 +126,20 @@ document.querySelector('#tp-up').addEventListener('click', async () => {
             return file;
         }));
 
+        document.querySelector("#upload-status").style.display = "block"
+
         for (const file of files) {
             await uploadFile(file);
         }
+
+        document.querySelector(".us-t").innerText = "All Uploads Completed"
+        document.querySelector(".us-close").style.display = "flex"
     } catch (err) {
         console.error(err);
     }
 });
+
+document.querySelector(".us-close").addEventListener("click", (e) => {
+    e.target.style.display = "none"
+    document.querySelector("#upload-status").style.display = "none"
+})
