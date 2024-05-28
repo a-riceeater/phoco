@@ -377,3 +377,53 @@ body {
 .lp-op.selected > svg {
     fill: rgb(44, 44, 44);
 }
+
+#upload-status {
+    position: fixed;
+    z-index: 4;
+    right: 25px;
+    bottom: 25px;
+    background-color: #36383b;
+    width: 290px;
+    height: 200px; 
+    border-radius: 10px / 10px;
+    box-shadow: 6.5px 12.0px 12.0px hsl(0deg 0% 0% / 0.30);
+    padding-left: 15px;
+    box-sizing: border-box;
+}
+
+.us-t {
+    font-size: 18px;
+    color: lightgray;
+    margin-bottom: 0;
+    font-family: "Overpass", sans-serif;
+}
+
+.us-details {
+    margin-top: 8px;
+    color: lightgray;
+    font-size: 14.5px;
+    font-family: "Overpass", sans-serif;
+}
+
+.us-up {
+    color: rgb(129, 199, 132);
+}
+
+.us-fail {
+    color: rgb(250, 101, 101);
+}
+
+#up-preview {
+    height: 100px;
+    width: 80px;
+    float: left;
+    border-radius: 5px / 5px;
+}
+
+#us-info {
+    float: left;
+    color: lightgray;
+    line-height: 1.5em;
+    margin-left: 9px;
+}
