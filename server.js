@@ -142,7 +142,12 @@ app.use(express.json());
 
 app.get("/api/request-photos", (req, res) => {
     const { start, days } = req.body;
-
+    var files = []
+    for (let i = 0; i < days; i++) {
+        if (photoMetadata[start]) {
+            files[i] = Object.keys(photoMetadata[start])
+        }
+    }
 })
 
 app.listen(7000, () => {
