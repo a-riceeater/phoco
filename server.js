@@ -9,6 +9,7 @@ const exifr = require('exifr');
 const app = express();
 
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/photos", express.static(path.join(__dirname, "uploads")));
 /*
 app.use(bodyParser.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
