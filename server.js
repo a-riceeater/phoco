@@ -5,6 +5,9 @@ const bodyParser = require("body-parser");
 const multiparty = require('multiparty');
 const multer = require('multer');
 const exifr = require('exifr');
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegPath = require('ffmpeg-static');
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
 
@@ -38,7 +41,7 @@ app.get("/", (req, res) => {
 })
 
 const calculateMegapixels = (width, height) => {
-    return (width * height) / 1000000;
+    return ((width * height) / 1000000).toFixed(1);
 };
 
 app.post('/upload', upload.single('file'), async (req, res) => {
@@ -80,7 +83,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                         fstop: ex.FNumber,
                         iso: ex.ISO,
                         shutter: ex.ExposureTime ? `1/${Math.round(1 / ex.ExposureTime)}` : undefined,
-                        megapixels: calculateMegapixels(ex.ExifImageWidth, ex.ExifImageHeight) || undefined,
+                        megapixels: calculateMegapixels(ex.ExifImageWidth || ex.ImageWidth, ex.ExifImageHeight || ex.ImageHeight) || undefined,
                         resolution: `${ex.ExifImageWidth || ex.ImageWidth} x ${ex.ExifImageHeight || ex.ImageHeight}`,
                         make: ex.Make,
                         model: ex.Model,
@@ -105,6 +108,27 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
                     writeMetadata();
                 })
+                .catch((err) => {
+                    console.error(err)
+                    ffmpeg.ffprobe(finalFilePath, (err, metadata) => {
+                        console.log(metadata);
+                        const photoDate = new Date();
+                        const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
+                        if (!photoMetadata[pds]) photoMetadata[pds] = {};
+
+                        var m = metadata.streams[0];
+                        
+                        photoMetadata[pds][fileName] = {
+                            uploaded: new Date(),
+                            width: m.width,
+                            height: m.height,
+                            megapixels: calculateMegapixels(m.width, m.height),
+
+                        }
+
+                        writeMetadata()
+                    });
+                })
         } else {
             res.sendStatus(200);
         }
@@ -118,7 +142,7 @@ app.use(express.json());
 
 app.get("/api/request-photos", (req, res) => {
     const { start, days } = req.body;
-    
+
 })
 
 app.listen(7000, () => {
