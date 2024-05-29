@@ -69,7 +69,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
             exifr.parse(finalFilePath)
                 .then((ex) => {
-                    const photoDate = new Date(ex.DateTimeOriginal);
+                    const photoDate = new Date(ex.DateTimeOriginal == undefined ? new Date() : ex.DateTimeOriginal);
                     const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
                     if (!photoMetadata[pds]) photoMetadata[pds] = {};
 
@@ -81,7 +81,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                         iso: ex.ISO,
                         shutter: `1/${Math.round(1 / ex.ExposureTime)}`,
                         megapixels: calculateMegapixels(ex.ExifImageWidth, ex.ExifImageHeight),
-                        resolution: `${ex.ExifImageWidth} x ${ex.ExifImageHeight}`,
+                        resolution: `${ex.ExifImageWidth || ex.ImageWidth} x ${ex.ExifImageHeight || ex.ImageHeight}`,
                         make: ex.Make,
                         model: ex.Model,
                         gps: {
@@ -89,7 +89,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                             latitude: ex.GPSLatitude,
                             longitudeRef: ex.GPSLongitudeRef,
                             longitude: ex.GPSLongitude,
-                            altitudeRef: ex.GPSAltitudeRef[0],
+                            altitudeRef: ex.GPSAltitudeRef ? ex.GPSAltitudeRef[0] : undefined,
                             altitude: ex.GPSAltitude,
                             timeStamp: ex.GPSTimeStamp,
                             speedRef: ex.GPSSpeedRef,
