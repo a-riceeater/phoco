@@ -46,3 +46,17 @@ document.querySelector("#tp-user").addEventListener("click", (e) => {
         document.querySelector("#user-pop").style.display = "none"
     }
 })
+
+const currentDate = new Date();
+const pds = `${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDate.getFullYear()}`
+
+fetch("/api/request-photos", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        start: pds,
+        days: 2
+    })
+})

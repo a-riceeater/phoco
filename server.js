@@ -69,7 +69,11 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
             exifr.parse(finalFilePath)
                 .then((ex) => {
-                    photoMetadata[fileName] = {
+                    const photoDate = new Date(ex.DateTimeOriginal);
+                    const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
+                    if (!photoMetadata[pds]) photoMetadata[pds] = {};
+
+                    photoMetadata[pds][fileName] = {
                         date: ex.DateTimeOriginal,
                         uploaded: new Date(),
                         dateOff: ex.OffsetTimeOriginal,
@@ -111,6 +115,11 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 app.use(express.json());
+
+app.get("/api/request-photos", (req, res) => {
+    const { start, days } = req.body;
+    
+})
 
 app.listen(7000, () => {
     console.log("Phoco listening on :7000")
