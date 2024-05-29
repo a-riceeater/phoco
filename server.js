@@ -173,6 +173,7 @@ app.post("/api/request-photos", (req, res) => {
     }
 
     console.log(files);
+    res.send(files)
 });
 
 
