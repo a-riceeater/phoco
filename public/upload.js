@@ -166,7 +166,7 @@ document.querySelector('#file-input').addEventListener('change', async (event) =
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         await uploadFile(file);
-        var pd = ((i / files.length) * 100).toFixed();
+        var pd = ((i + 1 / files.length) * 100).toFixed();
 
         document.querySelector("#bp-fi").style.width = pd + "%"
     }
