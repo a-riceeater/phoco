@@ -165,10 +165,10 @@ app.post("/api/request-photos", (req, res) => {
         }
 
         if (photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]) {
-            files[ind] = Object.keys(photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]);
+            files[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`] = Object.keys(photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]);
         } else {
             console.log(`No photos found for ${day.toISOString().split('T')[0]}`);
-            files[ind] = []; // empty array as placeholder
+            files[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`] = []; // empty array as placeholder
         }
     }
 

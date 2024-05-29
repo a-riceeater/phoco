@@ -60,3 +60,12 @@ fetch("/api/request-photos", {
         days: 2
     })
 })
+.then((days) => {
+    for (let i = 0; i < days.length; i++) {
+        for (let b = 0; b < days[i].length; b++) {
+            const img = document.createElement("img");
+            img.src = "photos/" + days[i][b]
+            document.querySelector("#photos-container").appendChild(img)
+        }
+    }
+})

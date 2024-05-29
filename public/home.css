@@ -10,6 +10,14 @@ body {
     font-family: "Product Sans", sans-serif;
 }
 
+#photos-container {
+    position: fixed;
+    left: 220px;
+    width: calc(100% - 220px);
+    height: 90%;
+    top: 10%;
+}
+
 #top-bar {
     position: fixed;
     top: 0;
