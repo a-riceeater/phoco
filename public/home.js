@@ -37,3 +37,12 @@ document.querySelector("#tb-search-input").addEventListener("focus", () => {
     document.querySelector("#tb-search").style.borderTopRightRadius = '35px'
     document.querySelector("#search-drop").style.display = "block"
 })
+
+document.querySelector("#tp-user").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (document.querySelector("#user-pop").style.display == "none") {
+        document.querySelector("#user-pop").style.display = "block"
+    } else {
+        document.querySelector("#user-pop").style.display = "none"
+    }
+})

@@ -131,8 +131,14 @@ document.querySelector('#tp-up').addEventListener('click', async () => {
 
             document.querySelector("#upload-status").style.display = "block";
 
-            for (const file of files) {
+            document.querySelector("#bp-fi").style.width = "2%"
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
                 await uploadFile(file);
+                var pd = (((i + 1) / files.length) * 100).toFixed();
+        
+                document.querySelector("#bp-fi").style.width = pd + "%"
             }
 
             document.querySelector(".us-t").innerText = "All Uploads Completed";
@@ -153,11 +159,16 @@ document.querySelector(".us-close").addEventListener("click", (e) => {
 
 document.querySelector('#file-input').addEventListener('change', async (event) => {
     const files = Array.from(event.target.files);
+    document.querySelector("#bp-fi").style.width = "2%"
 
     document.querySelector("#upload-status").style.display = "block";
 
-    for (const file of files) {
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         await uploadFile(file);
+        var pd = ((i / files.length) * 100).toFixed();
+
+        document.querySelector("#bp-fi").style.width = pd + "%"
     }
 
     document.querySelector(".us-t").innerText = "All Uploads Completed";

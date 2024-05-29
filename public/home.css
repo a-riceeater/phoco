@@ -57,6 +57,7 @@ body {
     border-bottom-right-radius: 35px;
     border-top: 1px solid rgb(211, 211, 211, 0.7);
     display: none;
+    z-index: 11;
 }
 
 #tb-search > svg {
@@ -233,6 +234,7 @@ body {
     justify-content: center;
     font-size: 18px;
     font-family: "Roboto", sans-serif;
+    user-select: none;
 }
 
 #tp-settings {
@@ -391,6 +393,7 @@ body {
     box-shadow: 6.5px 12.0px 12.0px hsl(0deg 0% 0% / 0.30);
     padding-left: 15px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .us-t {
@@ -446,4 +449,19 @@ body {
     font-size: 10px;
     font-weight: bold;
     display: none;
+}
+
+#bottom-progress { 
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #c8e4fc;
+}
+
+#bp-fi {
+    width: 2%;
+    height: 100%;
+    background-color: #449ce9;
 }
