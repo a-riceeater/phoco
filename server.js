@@ -16,8 +16,16 @@ app.use(bodyParser.text({ type: 'multipart/form-data', limit: '2mb' }));
 app.use(bodyParser.text({ type: 'text/plain', limit: '2mb' }));*/
 app.use(require("serve-favicon")(path.join(__dirname, "public", "logo.png")));
 
-const upload = multer({ dest: 'uploads/' });
+var uploadDestination = "uploads/" // integrate changing later via settings
 
+const upload = multer({ dest: uploadDestination });
+var photoMetadata;
+
+if (fs.existsSync((path.join(uploadDestination + "metadata.json")))) photoMetadata = JSON.parse(fs.readFileSync(path.join(uploadDestination + "metadata.json"), "utf8"));
+else {
+    fs.writeFileSync(path.join(uploadDestination + "metadata.json"), "{}", "utf8");
+    photoMetadata = {}
+}
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "html", "home.html"));
