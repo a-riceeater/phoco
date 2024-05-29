@@ -36,6 +36,12 @@ const writeMetadata = () => {
     fs.writeFileSync(path.join(uploadDestination + "metadata.json"), JSON.stringify(photoMetadata), "utf8");
 }
 
+Date.prototype.subtractDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() - days);
+    return date;
+}
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "html", "home.html"));
 })
@@ -140,15 +146,35 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
 app.use(express.json());
 
-app.get("/api/request-photos", (req, res) => {
+app.post("/api/request-photos", (req, res) => {
     const { start, days } = req.body;
-    var files = []
+    var files = [];
+    let currentDate = new Date(start);
+
     for (let i = 0; i < days; i++) {
-        if (photoMetadata[start]) {
-            files[i] = Object.keys(photoMetadata[start])
+        let ind = i;
+        let day = currentDate;
+
+        while (!photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]) {
+            day = day.subtractDays(1)
+            ind++; 
+
+            if (ind >= days) {
+                break;
+            }
+        }
+
+        if (photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]) {
+            files[ind] = Object.keys(photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]);
+        } else {
+            console.log(`No photos found for ${day.toISOString().split('T')[0]}`);
+            files[ind] = []; // empty array as placeholder
         }
     }
-})
+
+    console.log(files);
+});
+
 
 app.listen(7000, () => {
     console.log("Phoco listening on :7000")
