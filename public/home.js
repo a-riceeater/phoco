@@ -95,19 +95,40 @@ fetch("/api/request-photos", {
                 img.addEventListener("click", (e) => {
                     e.preventDefault();
                     console.log(e.target.nodeName)
+                    if (selecting) {
+                        img.classList.toggle("selected")
+                        ii.classList.toggle("selected")
+                        selecting = !!document.querySelectorAll(".df-photo-thumb.selected")
+
+                        switch (e.target.nodeName) {
+                            case "svg":
+                                e.target.classList.toggle("selected")
+                                break;
+                            case "path":
+                                e.target.parentNode.classList.toggle("selected");
+                            default:
+                                img.childNodes.forEach(el => {
+                                    if (el.nodeName == "svg") {
+                                        el.classList.toggle("selected")
+                                    }
+                                })
+                        }
+                        return
+                    }
+
                     switch (e.target.nodeName) {
                         case "svg":
                             e.target.classList.toggle("selected")
                             ii.classList.toggle("selected")
                             img.classList.toggle("selected")
-                            selecting = ii.classList.contains("selected")
+                            selecting = !!document.querySelectorAll(".df-photo-thumb.selected")
                             break
                         case "path":
                             e.target.parentNode.classList.toggle("selected");
                             ii.classList.toggle("selected")
                             img.classList.toggle("selected")
-                            selecting = ii.classList.contains("selected")
-                    }
+                            selecting = !!document.querySelectorAll(".df-photo-thumb.selected")
+                        }
                 })
             }
         }
