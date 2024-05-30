@@ -112,10 +112,20 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                         }
                     }
 
+                    const sortedDb = Object.keys(photoMetadata)
+                        .sort((a, b) => new Date(b) - new Date(a))
+                        .reduce((acc, key) => {
+                            acc[key] = photoMetadata[key];
+                            return acc;
+                        }, {});
+
+                    photoMetadata = sortedDb;
+
                     writeMetadata();
                 })
                 .catch((err) => {
                     console.error(err)
+                    return
                     ffmpeg.ffprobe(finalFilePath, (err, metadata) => {
                         console.log(metadata);
                         const photoDate = new Date();
@@ -149,36 +159,60 @@ app.use(express.json());
 const findPhotosForDates = (start, days, photoMetadata) => {
     let files = {};
     let currentDate = new Date(start);
-    let maxAttempts = 2000;
-    let attempts = 0;
+    let photoDates = Object.keys(photoMetadata).map(date => new Date(date));
+    photoDates.sort((a, b) => b - a); // Sort dates in descending order
+
+    const findClosestDate = (targetDate) => {
+        let left = 0;
+        let right = photoDates.length - 1;
+
+        while (left <= right) {
+            let mid = Math.floor((left + right) / 2);
+            if (photoDates[mid] <= targetDate) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return photoDates[left] || null;
+    };
 
     for (let i = 0; i < days; i++) {
-        let ind = i;
-        let day = new Date(currentDate);
-        day.setDate(currentDate.getDate() - i);
+        let targetDate = new Date(currentDate);
+        targetDate.setDate(currentDate.getDate() - i);
 
-        while (!photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]) {
-            day.setDate(day.getDate() - 1);
-            ind++;
-            attempts++;
-            if (attempts > maxAttempts) return {}
-        }
+        let closestDate = findClosestDate(targetDate);
 
-        if (photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]) {
-            files[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`] = Object.keys(photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]);
+        if (closestDate) {
+            let dateKey = `${closestDate.getMonth() + 1}/${closestDate.getDate()}/${closestDate.getFullYear()}`;
+            files[dateKey] = Object.keys(photoMetadata[dateKey]);
         } else {
-            console.log(`No photos found for ${day.toISOString().split('T')[0]}`);
-            files[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`] = []; // empty array as placeholder
+            console.log(`No photos found for ${targetDate.toISOString().split('T')[0]}`);
+            let dateKey = `${targetDate.getMonth() + 1}/${targetDate.getDate()}/${targetDate.getFullYear()}`;
+            files[dateKey] = []; // empty array as placeholder
         }
     }
+
     return files;
 };
 
-// API endpoint
-app.post("/api/request-photos", (req, res) => {
+app.post('/api/request-photos', (req, res) => {
     const { start, days } = req.body;
+    if (!start || !days) {
+        return res.sendStatus(400);
+    }
 
-    const files = findPhotosForDates(start, days, photoMetadata);
+    var files = {}
+
+    const keys = Object.keys(photoMetadata);
+    const startIndex = keys.indexOf(start);
+    if (startIndex === -1) return res.sendStatus(400); // invalid start
+
+    for (let i = startIndex; i < keys.length; i++) {
+        const key = keys[i];
+        const value = photoMetadata[key];
+        files[key] = value;
+    }
 
     res.send(files);
 });

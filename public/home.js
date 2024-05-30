@@ -50,6 +50,9 @@ document.querySelector("#tp-user").addEventListener("click", (e) => {
 const currentDate = new Date();
 const pds = `${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDate.getFullYear()}`
 
+const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 fetch("/api/request-photos", {
     method: "POST",
     headers: {
@@ -61,14 +64,24 @@ fetch("/api/request-photos", {
     })
 })
     .then((d) => d.json())
-    .then((days) => {
-        console.log(days)
-        for (const [key, value] of Object.entries(days)) {
-            for (let b = 0; b < value.length; b++) {
-                const img = document.createElement("img");
-                img.src = "/photos/" + value[b]
+    .then((d) => {
+        console.log(d)
+        for (const [key, value] of Object.entries(d)) {
+            const date = new Date(key);
+            const dateContainer = document.createElement("div");
+            dateContainer.innerHTML = `
+            <p class="dc-title">${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
+            dateContainer.classList.add("dc-date-container")
+
+            document.querySelector("#photos-container").appendChild(dateContainer)  
+            for (const [k2, v2] of Object.entries(value)) {
+                const img = document.createElement("div");
+                img.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
+                <img src="/photos/${k2}">
+                `
                 img.classList.add("df-photo-thumb")
-                document.querySelector("#photos-container").appendChild(img)                
+                dateContainer.appendChild(img)  
             }
         }
     })
