@@ -54,6 +54,7 @@ const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 var selecting = false;
+const selectingBar = document.getElementById("selecting-bar");
 
 fetch("/api/request-photos", {
     method: "POST",
@@ -75,61 +76,71 @@ fetch("/api/request-photos", {
             <p class="dc-title">${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
             dateContainer.classList.add("dc-date-container")
 
-            document.querySelector("#photos-container").appendChild(dateContainer)  
+            document.querySelector("#photos-container").appendChild(dateContainer)
             for (const [k2, v2] of Object.entries(value)) {
                 const img = document.createElement("div");
                 img.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
                 `
                 img.classList.add("df-photo-thumb")
-                dateContainer.appendChild(img)  
-                
+                dateContainer.appendChild(img)
+
                 const ii = document.createElement("img");
                 ii.src = `/thumbnails/${k2}`
                 img.appendChild(ii);
 
-                 ii.addEventListener("load", () => {
+                ii.addEventListener("load", () => {
                     ii.src = `/photos/${k2}`
                 }, { once: true })
 
                 img.addEventListener("click", (e) => {
                     e.preventDefault();
-                    console.log(e.target.nodeName)
+                
+                    console.log(e.target.nodeName);
                     if (selecting) {
-                        img.classList.toggle("selected")
-                        ii.classList.toggle("selected")
-                        selecting = !!document.querySelectorAll(".df-photo-thumb.selected")
-
+                        img.classList.toggle("selected");
+                        ii.classList.toggle("selected");
+                        selecting = !!document.querySelectorAll(".df-photo-thumb.selected").length;
+                
                         switch (e.target.nodeName) {
                             case "svg":
-                                e.target.classList.toggle("selected")
+                                e.target.classList.toggle("selected");
                                 break;
                             case "path":
                                 e.target.parentNode.classList.toggle("selected");
+                                break;
                             default:
                                 img.childNodes.forEach(el => {
                                     if (el.nodeName == "svg") {
-                                        el.classList.toggle("selected")
+                                        el.classList.toggle("selected");
                                     }
-                                })
+                                });
                         }
-                        return
+                
+                        // Update the display property of the selecting bar
+                        selectingBar.style.display = selecting ? "flex" : "none";
+                
+                        return;
                     }
-
+                
                     switch (e.target.nodeName) {
                         case "svg":
-                            e.target.classList.toggle("selected")
-                            ii.classList.toggle("selected")
-                            img.classList.toggle("selected")
-                            selecting = !!document.querySelectorAll(".df-photo-thumb.selected")
-                            break
+                            e.target.classList.toggle("selected");
+                            ii.classList.toggle("selected");
+                            img.classList.toggle("selected");
+                            selecting = !!document.querySelectorAll(".df-photo-thumb.selected").length;
+                            break;
                         case "path":
                             e.target.parentNode.classList.toggle("selected");
-                            ii.classList.toggle("selected")
-                            img.classList.toggle("selected")
-                            selecting = !!document.querySelectorAll(".df-photo-thumb.selected")
-                        }
-                })
+                            ii.classList.toggle("selected");
+                            img.classList.toggle("selected");
+                            selecting = !!document.querySelectorAll(".df-photo-thumb.selected").length;
+                            break;
+                    }
+                    
+                    // Update the display property of the selecting bar
+                    selectingBar.style.display = selecting ? "flex" : "none";
+                });
             }
         }
     })
