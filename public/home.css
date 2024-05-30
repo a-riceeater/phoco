@@ -482,15 +482,23 @@ body {
     cursor: pointer;
     position: relative;
     width: fit-content;
-    display: inline-block;
+    display: inline-flex;
     transition: .2s;
     user-select: none;
 }
 
 .df-photo-thumb > img {
     height: 225px;
+    transition: .2s;
 }
 
+.df-photo-thumb > img.selected {
+    transform: scale(0.9)
+}
+
+.df-photo-thumb.selected {
+    background-color: lightgray;
+}
 
 .df-photo-thumb > svg {
     position: absolute;

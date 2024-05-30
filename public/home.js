@@ -53,6 +53,8 @@ const pds = `${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDat
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+var selecting = false;
+
 fetch("/api/request-photos", {
     method: "POST",
     headers: {
@@ -86,7 +88,7 @@ fetch("/api/request-photos", {
                 ii.src = `/thumbnails/${k2}`
                 img.appendChild(ii);
 
-                 ii.addEventListener("load", (e) => {
+                 ii.addEventListener("load", () => {
                     ii.src = `/photos/${k2}`
                 }, { once: true })
 
@@ -96,9 +98,15 @@ fetch("/api/request-photos", {
                     switch (e.target.nodeName) {
                         case "svg":
                             e.target.classList.toggle("selected")
+                            ii.classList.toggle("selected")
+                            img.classList.toggle("selected")
+                            selecting = ii.classList.contains("selected")
                             break
                         case "path":
                             e.target.parentNode.classList.toggle("selected");
+                            ii.classList.toggle("selected")
+                            img.classList.toggle("selected")
+                            selecting = ii.classList.contains("selected")
                     }
                 })
             }
