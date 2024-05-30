@@ -36,7 +36,7 @@ const writeMetadata = () => {
     fs.writeFileSync(path.join(uploadDestination + "metadata.json"), JSON.stringify(photoMetadata), "utf8");
 }
 
-Date.prototype.subtractDays = function(days) {
+Date.prototype.subtractDays = function (days) {
     var date = new Date(this.valueOf());
     date.setDate(date.getDate() - days);
     return date;
@@ -123,7 +123,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                         if (!photoMetadata[pds]) photoMetadata[pds] = {};
 
                         var m = metadata.streams[0];
-                        
+
                         photoMetadata[pds][fileName] = {
                             uploaded: new Date(),
                             width: m.width,
@@ -146,22 +146,22 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
 app.use(express.json());
 
-app.post("/api/request-photos", (req, res) => {
-    const { start, days } = req.body;
-    var files = [];
+const findPhotosForDates = (start, days, photoMetadata) => {
+    let files = {};
     let currentDate = new Date(start);
+    let maxAttempts = 2000;
+    let attempts = 0;
 
     for (let i = 0; i < days; i++) {
         let ind = i;
-        let day = currentDate;
+        let day = new Date(currentDate);
+        day.setDate(currentDate.getDate() - i);
 
         while (!photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]) {
-            day = day.subtractDays(1)
-            ind++; 
-
-            if (ind >= days) {
-                break;
-            }
+            day.setDate(day.getDate() - 1);
+            ind++;
+            attempts++;
+            if (attempts > maxAttempts) return {}
         }
 
         if (photoMetadata[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`]) {
@@ -171,9 +171,16 @@ app.post("/api/request-photos", (req, res) => {
             files[`${day.getMonth() + 1}/${day.getDate()}/${day.getFullYear()}`] = []; // empty array as placeholder
         }
     }
+    return files;
+};
 
-    console.log(files);
-    res.send(files)
+// API endpoint
+app.post("/api/request-photos", (req, res) => {
+    const { start, days } = req.body;
+
+    const files = findPhotosForDates(start, days, photoMetadata);
+
+    res.send(files);
 });
 
 

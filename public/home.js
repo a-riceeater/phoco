@@ -57,18 +57,18 @@ fetch("/api/request-photos", {
     },
     body: JSON.stringify({
         start: pds,
-        days: 2
+        days: 5
     })
 })
+    .then((d) => d.json())
     .then((days) => {
-        try {
-            for (let i = 0; i < days.length; i++) {
-                for (let b = 0; b < days[i].length; b++) {
-                    const img = document.createElement("img");
-                    img.src = "/photos/" + days[i][b]
-                    alert("/photos/" + days[i][b])
-                    document.querySelector("#photos-container").appendChild(img)
-                }
+        console.log(days)
+        for (const [key, value] of Object.entries(days)) {
+            for (let b = 0; b < value.length; b++) {
+                const img = document.createElement("img");
+                img.src = "/photos/" + value[b]
+                img.classList.add("df-photo-thumb")
+                document.querySelector("#photos-container").appendChild(img)                
             }
-        } catch (err) { alert(err) }
+        }
     })

@@ -14,8 +14,11 @@ body {
     position: fixed;
     left: 220px;
     width: calc(100% - 220px);
-    height: 90%;
-    top: 10%;
+    height: calc(100% - 70px);
+    top: 70px;
+    padding-left: 15px;
+    padding-top: 20px;
+    box-sizing: border-box;
 }
 
 #top-bar {
@@ -472,4 +475,10 @@ body {
     width: 2%;
     height: 100%;
     background-color: #449ce9;
+}
+
+.df-photo-thumb {
+    height: 200px;
+    margin-right: 5px;
+    cursor: pointer;
 }
