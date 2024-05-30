@@ -55,6 +55,7 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 var selecting = false;
 const selectingBar = document.getElementById("selecting-bar");
+const sbAmount = document.getElementById("sb-amount");
 
 fetch("/api/request-photos", {
     method: "POST",
@@ -120,6 +121,10 @@ fetch("/api/request-photos", {
                         // Update the display property of the selecting bar
                         selectingBar.style.display = selecting ? "flex" : "none";
                 
+                        // Update the sb-amount text
+                        const selectedCount = document.querySelectorAll(".df-photo-thumb.selected").length;
+                        sbAmount.textContent = `${selectedCount} selected`;
+                
                         return;
                     }
                 
@@ -140,6 +145,10 @@ fetch("/api/request-photos", {
                     
                     // Update the display property of the selecting bar
                     selectingBar.style.display = selecting ? "flex" : "none";
+                
+                    // Update the sb-amount text
+                    const selectedCount = document.querySelectorAll(".df-photo-thumb.selected").length;
+                    sbAmount.textContent = `${selectedCount} selected`;
                 });
             }
         }
