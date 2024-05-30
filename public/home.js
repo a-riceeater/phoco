@@ -86,9 +86,9 @@ fetch("/api/request-photos", {
                 ii.src = `/thumbnails/${k2}`
                 img.appendChild(ii);
 
-                ii.addEventListener("load", (e) => {
+                 ii.addEventListener("load", (e) => {
                     ii.src = `/photos/${k2}`
-                })
+                }, { once: true })
 
                 img.addEventListener("click", (e) => {
                     e.preventDefault();
