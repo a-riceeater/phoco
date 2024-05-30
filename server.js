@@ -7,12 +7,14 @@ const multer = require('multer');
 const exifr = require('exifr');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
+const { generateThumbnail } = require("./thumbnail");
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(path.join(__dirname, "uploads")));
+app.use("/thumbnails", express.static(path.join(__dirname, "thumbnails")));
 /*
 app.use(bodyParser.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
@@ -75,6 +77,8 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
             await fs.remove(uploadDir);
             res.sendStatus(200);
+
+            generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), 300, 31);
 
             exifr.parse(finalFilePath)
                 .then((ex) => {

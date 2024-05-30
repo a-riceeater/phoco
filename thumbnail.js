@@ -28,9 +28,11 @@ function generateThumbnail(inputPath, outputPath, height, quality) {
     .run();
 }
 
+module.exports = { generateThumbnail: generateThumbnail }
+
 const inputImagePath = path.resolve(__dirname, 'uploads/IMG_8216.jpeg');
 const outputThumbnailPath = path.resolve(__dirname, 'thumbnail.jpg'); 
 const thumbnailHeight = 480;
 const thumbnailQuality = 30; // lower = heigher quality, 31 worst
 
-generateThumbnail(inputImagePath, outputThumbnailPath, thumbnailHeight, thumbnailQuality);
+//generateThumbnail(inputImagePath, outputThumbnailPath, thumbnailHeight, thumbnailQuality);
