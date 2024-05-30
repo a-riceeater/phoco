@@ -87,22 +87,24 @@ fetch("/api/request-photos", {
                 dateContainer.appendChild(img)
 
                 const ii = document.createElement("img");
-                ii.src = `/thumbnails/${k2}`
+                ii.src = `/buffers/${k2}`
                 img.appendChild(ii);
 
                 ii.addEventListener("load", () => {
-                    ii.src = `/photos/${k2}`
+                    setTimeout(() => {
+                        ii.src = `/thumbnails/${k2}`
+                    }, 800)
                 }, { once: true })
 
                 img.addEventListener("click", (e) => {
                     e.preventDefault();
-                
+
                     console.log(e.target.nodeName);
                     if (selecting) {
                         img.classList.toggle("selected");
                         ii.classList.toggle("selected");
                         selecting = !!document.querySelectorAll(".df-photo-thumb.selected").length;
-                
+
                         switch (e.target.nodeName) {
                             case "svg":
                                 e.target.classList.toggle("selected");
@@ -117,17 +119,17 @@ fetch("/api/request-photos", {
                                     }
                                 });
                         }
-                
+
                         // Update the display property of the selecting bar
                         selectingBar.style.display = selecting ? "flex" : "none";
-                
+
                         // Update the sb-amount text
                         const selectedCount = document.querySelectorAll(".df-photo-thumb.selected").length;
                         sbAmount.textContent = `${selectedCount} selected`;
-                
+
                         return;
                     }
-                
+
                     switch (e.target.nodeName) {
                         case "svg":
                             e.target.classList.toggle("selected");
@@ -142,14 +144,35 @@ fetch("/api/request-photos", {
                             selecting = !!document.querySelectorAll(".df-photo-thumb.selected").length;
                             break;
                     }
-                    
-                    // Update the display property of the selecting bar
+
                     selectingBar.style.display = selecting ? "flex" : "none";
-                
-                    // Update the sb-amount text
+
                     const selectedCount = document.querySelectorAll(".df-photo-thumb.selected").length;
                     sbAmount.textContent = `${selectedCount} selected`;
+
+                    if (!selecting) {
+                        ii.src.split("/").pop().SHA256()
+                        .then((id) => {
+                            navigate("/photo/" + id, ii.src.split("/").pop())
+                        })
+                    }
                 });
             }
         }
     })
+
+const navigate = (url, title) => {
+    window.history.pushState("", "", url)
+    document.title = title + " - phoco"
+}
+
+String.prototype.SHA256 = function () {
+    const utf8 = new TextEncoder().encode(this);
+    return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray
+            .map((bytes) => bytes.toString(16).padStart(2, '0'))
+            .join('');
+        return hashHex;
+    });
+}

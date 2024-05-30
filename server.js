@@ -15,6 +15,8 @@ const app = express();
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(path.join(__dirname, "uploads")));
 app.use("/thumbnails", express.static(path.join(__dirname, "thumbnails")));
+app.use("/buffers", express.static(path.join(__dirname, "buffers")));
+
 /*
 app.use(bodyParser.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
@@ -78,7 +80,8 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             await fs.remove(uploadDir);
             res.sendStatus(200);
 
-            generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), 300, 31);
+            generateThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName), 144, 31); // buffer
+            generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), 480, 12); // thumbnail
 
             exifr.parse(finalFilePath)
                 .then((ex) => {
@@ -210,7 +213,7 @@ app.post('/api/request-photos', (req, res) => {
 
     const keys = Object.keys(photoMetadata);
     const startIndex = keys.indexOf(start);
-    if (startIndex === -1) return res.sendStatus(400); // invalid start
+    //if (startIndex === -1) return res.sendStatus(400); // invalid start
 
     for (let i = startIndex; i < keys.length; i++) {
         const key = keys[i];
@@ -220,6 +223,10 @@ app.post('/api/request-photos', (req, res) => {
 
     res.send(files);
 });
+
+app.get("/photo/:id", (req, res) => {
+    res.sendFile(path.join(__dirname, "html", "home.html"));
+})
 
 
 app.listen(7000, () => {
