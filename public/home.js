@@ -176,3 +176,8 @@ String.prototype.SHA256 = function () {
         return hashHex;
     });
 }
+
+document.querySelector("#pcv-info").addEventListener("click", () => {
+    document.querySelector("#pv-im").style.width = "calc(100% - 300px)"
+    document.querySelector("#pv-info").style.right = "0px"
+})
