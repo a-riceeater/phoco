@@ -648,6 +648,7 @@ body {
     transform: translate(-50%, -50%);
     max-height: 100%;
     user-select: none;
+    max-width: 100%;
 }
 
 #pv-info {
@@ -660,6 +661,8 @@ body {
     box-sizing: border-box;
     padding-top: 10px;
     transition: right .3s;
+    z-index: 5;
+    background-color: var(--back);
 }
 
 #pv-info > h1 {

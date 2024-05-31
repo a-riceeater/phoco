@@ -152,9 +152,9 @@ fetch("/api/request-photos", {
 
                     if (!selecting) {
                         ii.src.split("/").pop().SHA256()
-                        .then((id) => {
-                            navigate("/photo/" + id, ii.src.split("/").pop())
-                        })
+                            .then((id) => {
+                                navigate("/photo/" + id, ii.src.split("/").pop())
+                            })
                     }
                 });
             }
@@ -178,6 +178,11 @@ String.prototype.SHA256 = function () {
 }
 
 document.querySelector("#pcv-info").addEventListener("click", () => {
-    document.querySelector("#pv-im").style.width = "calc(100% - 300px)"
-    document.querySelector("#pv-info").style.right = "0px"
+    if (document.querySelector("#pv-info").style.right == "-300px") {
+        document.querySelector("#pv-im").style.width = "calc(100% - 300px)"
+        document.querySelector("#pv-info").style.right = "0px"
+    } else {
+        document.querySelector("#pv-im").style.width = "100%"
+        document.querySelector("#pv-info").style.right = "-300px"
+    }
 })
