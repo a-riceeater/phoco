@@ -81,7 +81,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             res.sendStatus(200);
 
             generateThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName), 144, 31); // buffer
-            generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), 480, 12); // thumbnail
+            generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), 1080, 25); // thumbnail
 
             exifr.parse(finalFilePath)
                 .then((ex) => {

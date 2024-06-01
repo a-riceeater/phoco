@@ -120,10 +120,8 @@ fetch("/api/request-photos", {
                                 });
                         }
 
-                        // Update the display property of the selecting bar
                         selectingBar.style.display = selecting ? "flex" : "none";
 
-                        // Update the sb-amount text
                         const selectedCount = document.querySelectorAll(".df-photo-thumb.selected").length;
                         sbAmount.textContent = `${selectedCount} selected`;
 
@@ -154,6 +152,11 @@ fetch("/api/request-photos", {
                         ii.src.split("/").pop().SHA256()
                             .then((id) => {
                                 navigate("/photo/" + id, ii.src.split("/").pop())
+                                document.querySelector("#photo-view").style.display = "block"
+                                document.querySelector("#pv-img").src = `/thumbnails/${ii.src.split("/").pop()}`
+                                document.querySelector("#pv-img").addEventListener("load", () => {
+                                    setTimeout(() => document.querySelector("#pv-img").src = `/photos/${ii.src.split("/").pop()}`, 500)
+                                }, { once: true })
                             })
                     }
                 });
@@ -185,4 +188,9 @@ document.querySelector("#pcv-info").addEventListener("click", () => {
         document.querySelector("#pv-im").style.width = "100%"
         document.querySelector("#pv-info").style.right = "-300px"
     }
+})
+
+document.querySelector("#pv-back").addEventListener("click", () => {
+    document.querySelector("#photo-view").style.display = "none"
+    navigate("/", "Photos")
 })

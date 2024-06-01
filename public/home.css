@@ -689,7 +689,7 @@ body {
 #pv-controls {
     z-index: 10;
     position: absolute;
-    top: 15px;
+    top: 25px;
     right: 20px;
     display: flex;
     align-items: center;
@@ -698,14 +698,14 @@ body {
 #pv-controls > svg {
     height: 20px;
     width: 20px;
-    fill: lightgray;
+    fill: white;
     margin-left: 30px;
     cursor: pointer;
 }
 
 #pcv-info {
     border-radius: 100%; 
-    border: 2px solid lightgray; 
+    border: 2px solid white; 
     padding: 4px; 
     height: 12px !important; 
     width: 12px !important;
@@ -713,4 +713,15 @@ body {
 
 #pcv-zo {
     display: none;
+}
+
+#pv-back {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: 30px;
+    height: 20px;
+    fill: white;
+    z-index: 12;
+    cursor: pointer;
 }
