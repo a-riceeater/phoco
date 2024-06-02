@@ -229,6 +229,6 @@ app.get("/photo/:id", (req, res) => {
 })
 
 
-app.listen(7000, () => {
+app.listen(7700, () => {
     console.log("Phoco listening on :7000")
 })

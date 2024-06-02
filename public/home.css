@@ -727,7 +727,7 @@ body {
 }
 
 .pvi-detail {
-    height: 80px;
+    height: 70px;
     width: 100%;
 }
 
@@ -742,7 +742,7 @@ body {
     vertical-align: bottom;
     margin-left: 10px;
     font-size: 18px;
-    color: lightgray;
+    color: white;
 }
 
 .pvi-sub {
@@ -754,4 +754,15 @@ body {
 .pvid-details {
     color: lightgray;
     margin-left: calc(24px + 10px + 4px);
+    margin-top: 4px;
+    font-size: 16px;
+    font-weight: lighter;
+}
+
+.cd {
+    margin-right: 4px;
+}
+
+.aperture {
+    font-style: italic;
 }
