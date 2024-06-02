@@ -653,8 +653,8 @@ body {
 
 #pv-info {
     position: absolute;
-    width: 300px;
-    right: -300px;
+    width: 350px;
+    right: -350px;
     top: 0;
     height: 100%;
     padding-left: 25px;
@@ -724,4 +724,34 @@ body {
     fill: white;
     z-index: 12;
     cursor: pointer;
+}
+
+.pvi-detail {
+    height: 80px;
+    width: 100%;
+}
+
+.pvi-detail > svg {
+    height: 24px;
+    width: 24px;
+    fill: white;
+    vertical-align: middle;
+}
+
+.pvid-t {
+    vertical-align: bottom;
+    margin-left: 10px;
+    font-size: 18px;
+    color: lightgray;
+}
+
+.pvi-sub {
+    margin-top: 30px;
+    color: lightgray;
+    font-size: 18px;
+}
+
+.pvid-details {
+    color: lightgray;
+    margin-left: calc(24px + 10px + 4px);
 }
