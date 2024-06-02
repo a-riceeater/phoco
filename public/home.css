@@ -728,7 +728,16 @@ body {
 
 .pvi-detail {
     height: 70px;
-    width: 100%;
+    width: calc(100% + 25px);
+    cursor: pointer;
+    margin-left: -25px;
+    padding-left: 25px;
+    box-sizing: border-box;
+    padding-top: 13px;
+}
+
+.pvi-detail:hover {
+    background-color: #2f2f30;
 }
 
 .pvi-detail > svg {
