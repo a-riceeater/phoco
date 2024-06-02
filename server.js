@@ -89,6 +89,8 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                     const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
                     if (!photoMetadata[pds]) photoMetadata[pds] = {};
 
+                    console.log(ex)
+
                     photoMetadata[pds][fileName] = {
                         date: ex.DateTimeOriginal,
                         uploaded: new Date(),
@@ -100,11 +102,12 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                         resolution: `${ex.ExifImageWidth || ex.ImageWidth} x ${ex.ExifImageHeight || ex.ImageHeight}`,
                         make: ex.Make,
                         model: ex.Model,
+                        lensInfo: ex.LensInfo,
                         gps: {
                             latitudeRef: ex.GPSLatitudeRef,
-                            latitude: ex.GPSLatitude,
+                            latitude: ex.latitude,
                             longitudeRef: ex.GPSLongitudeRef,
-                            longitude: ex.GPSLongitude,
+                            longitude: ex.longitude,
                             altitudeRef: ex.GPSAltitudeRef ? ex.GPSAltitudeRef[0] : undefined,
                             altitude: ex.GPSAltitude,
                             timeStamp: ex.GPSTimeStamp,
@@ -228,6 +231,14 @@ app.get("/photo/:id", (req, res) => {
     res.sendFile(path.join(__dirname, "html", "home.html"));
 })
 
+app.get("/api/request-metadata/:date/:name", (req, res) => {
+    if (!req.params.date || !req.params.name) return res.sendStatus(400);
+
+    const date = req.params.date.replaceAll("-", "/");
+
+    if (!photoMetadata[date][req.params.name]) return res.sendStatus(400);
+    res.send(photoMetadata[date][req.params.name]);
+})
 
 app.listen(7700, () => {
     console.log("Phoco listening on :7000")

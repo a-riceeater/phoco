@@ -53,6 +53,37 @@ const pds = `${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDat
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+const dateYesterday = (date) => {
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    return date.getMonth() === yesterday.getMonth() &&
+        date.getDate() === yesterday.getDate() &&
+        date.getFullYear() === yesterday.getFullYear();
+}
+
+const formatDate = (date) => {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+
+    let offset = -date.getTimezoneOffset();
+    let sign = offset >= 0 ? '+' : '-';
+    offset = Math.abs(offset);
+    let offsetHours = Math.floor(offset / 60);
+    let offsetMinutes = offset % 60;
+
+    offsetMinutes = offsetMinutes < 10 ? '0' + offsetMinutes : offsetMinutes;
+
+    let gmtOffset = `GMT${sign}${offsetHours}:${offsetMinutes}`;
+    return `${hours}:${minutes}${ampm} ${gmtOffset}`;
+}
+
 var selecting = false;
 const selectingBar = document.getElementById("selecting-bar");
 const sbAmount = document.getElementById("sb-amount");
@@ -84,7 +115,7 @@ fetch("/api/request-photos", {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
                 `
                 img.classList.add("df-photo-thumb")
-                dateContainer.appendChild(img)
+                dateContainer.appendChild(img);
 
                 const ii = document.createElement("img");
                 ii.src = `/buffers/${k2}`
@@ -157,6 +188,33 @@ fetch("/api/request-photos", {
                                 document.querySelector("#pv-img").addEventListener("load", () => {
                                     setTimeout(() => document.querySelector("#pv-img").src = `/photos/${ii.src.split("/").pop()}`, 500)
                                 }, { once: true })
+
+                                document.querySelector("#pvid-fname").innerText = k2;
+
+                                fetch(`/api/request-metadata/${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}/${k2}`, {
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    method: "GET"
+                                })
+                                    .then((d) => d.json())
+                                    .then((metadata) => {
+                                        const photoDate = new Date(metadata.date || metadata.uploaded);
+                                        console.log(metadata);
+                                        document.querySelector("#pvid-camera").innerText = `${metadata.make || ""} ${metadata.model || "Unkown Camera"}`
+                                        document.querySelector("#pvid-shutter").innerText = metadata.shutter || ""
+                                        document.querySelector("#pvid-mm").innerText = metadata.lensInfo ? metadata.lensInfo[1] + "mm" : ""
+                                        document.querySelector("#pvid-iso").innerText = metadata.iso ? `ISO ${metadata.iso}` : ""
+                                        document.querySelector("#pvid-aperture").innerText = metadata.fstop || "0"
+
+                                        document.querySelector("#megapixels").innerText = metadata.megapixels ? `${metadata.megapixels}MP` : "";
+                                        document.querySelector("#resolution").innerText = metadata.resolution || ""
+                                        const { latitude, longitude } = metadata.gps;
+                                        document.querySelector("#pvid-location").innerText = `${latitude ? latitude.toFixed(4) : ""}${latitude && longitude ? "," : ""} ${longitude ? longitude.toFixed(4) : ""}`;
+
+                                        document.querySelector("#pvid-day").innerText = `${months[photoDate.getMonth()]} ${photoDate.getDate()}, ${photoDate.getFullYear()}`;
+                                        document.querySelector("#pvid-date-de").innerHTML = `${dateYesterday(photoDate) ? "Yesterday" : days[photoDate.getDay()]}, <span class="cd">${formatDate(photoDate).split(" ")[0]}</span> <span class="cd">${formatDate(photoDate).split(" ")[1]}</span>`
+                                    })
                             })
                     }
                 });
@@ -193,4 +251,4 @@ document.querySelector("#pcv-info").addEventListener("click", () => {
 document.querySelector("#pv-back").addEventListener("click", () => {
     document.querySelector("#photo-view").style.display = "none"
     navigate("/", "Photos")
-})
+})  

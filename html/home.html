@@ -146,8 +146,8 @@
             <p class="pvi-sub">Details</p>
             <div class="pvi-detail">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm80 64c-8.8 0-16 7.2-16 16v96c0 8.8 7.2 16 16 16h96c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80z"/></svg>
-                <span class="pvid-t">May 31</span>
-                <p class="pvid-details">Yesterday, 1:10PM GMT-07:00</p>
+                <span class="pvid-t" id="pvid-day">May 31</span>
+                <p class="pvid-details" id="pvid-date-de">Yesterday, 1:10PM GMT-07:00</p>
             </div>
             <div class="pvi-detail">
                 <svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
@@ -169,14 +169,22 @@
 		c-1.12,0.159-2.232-0.333-2.868-1.268c-0.636-0.935-0.685-2.151-0.125-3.134l50.072-87.842c0.525-0.922,1.503-1.492,2.564-1.497
 		c1.061-0.004,2.043,0.559,2.576,1.476l24.155,41.618c2.071,3.569,1.573,8.063-1.226,11.096
 		C225.27,258.28,198.981,272.699,169.446,276.89z"></path></g></svg>
-                <span class="pvid-t">Apple iPhone 12 mini</span>
+                <span class="pvid-t" id="pvid-camera">Apple iPhone 12 mini</span>
                 <p class="pvid-details">
                     <span class="cd">
-                        <span class="aperture">f</span>/16
+                        <span class="aperture">f</span>/<span id="pvid-aperture">16</span>
                     </span>
-                    <span class="cd">1/7299</span>
-                    <span class="cd">4.2mm</span>
-                    <span class="cd">ISO32</span>
+                    <span class="cd" id="pvid-shutter">1/7299</span>
+                    <span class="cd" id="pvid-mm">4.2mm</span>
+                    <span class="cd" id="pvid-iso">ISO32</span>
+                </p>
+            </div>
+            <div class="pvi-detail">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M448 80c8.8 0 16 7.2 16 16V415.8l-5-6.5-136-176c-4.5-5.9-11.6-9.3-19-9.3s-14.4 3.4-19 9.3L202 340.7l-30.5-42.7C167 291.7 159.8 288 152 288s-15 3.7-19.5 10.1l-80 112L48 416.3l0-.3V96c0-8.8 7.2-16 16-16H448zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm80 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>
+                <span class="pvid-t" id="pvid-fname">IMG_8236.HEIC</span>
+                <p class="pvid-details">
+                    <span class="cd" id="megapixels">12.2MP</span>
+                    <span class="cd" id="resolution">3024 × 4032</span>
                 </p>
             </div>
             <div class="pvi-detail">
@@ -186,7 +194,7 @@
             </div>
             <div class="pvi-detail">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
-                <span class="pvid-t">San Francisco, CA</span>
+                <span class="pvid-t" id="pvid-location">San Francisco, CA</span>
             </div>
         </div>
     </div>
