@@ -88,6 +88,29 @@ var selecting = false;
 const selectingBar = document.getElementById("selecting-bar");
 const sbAmount = document.getElementById("sb-amount");
 
+async function fetchAndConvertHeic(url, image) {
+    try {
+        const response = await fetch(url);
+        const heicBlob = await response.blob();
+
+        const convertedBlob = await heic2any({
+            blob: heicBlob,
+            toType: 'image/jpeg',
+            quality: 0.8
+        });
+
+        const reader = new FileReader();
+        reader.onloadend = function () {
+            const base64data = reader.result;
+            image.src = base64data;
+        };
+
+        reader.readAsDataURL(convertedBlob);
+    } catch (error) {
+        console.error('Conversion failed:', error);
+    }
+}
+
 fetch("/api/request-photos", {
     method: "POST",
     headers: {
@@ -118,12 +141,17 @@ fetch("/api/request-photos", {
                 dateContainer.appendChild(img);
 
                 const ii = document.createElement("img");
-                ii.src = `/buffers/${k2}`
+
+                if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
+                    fetchAndConvertHeic(`/buffers/${k2}`, ii);
+                } else ii.src = `/buffers/${k2}`
                 img.appendChild(ii);
 
                 ii.addEventListener("load", () => {
                     setTimeout(() => {
-                        ii.src = `/thumbnails/${k2}`
+                        if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
+                            fetchAndConvertHeic(`/thumbnails/${k2}`, ii);
+                        } else ii.src = `/thumbnails/${k2}`
                     }, 800)
                 }, { once: true })
 
