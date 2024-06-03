@@ -214,6 +214,7 @@ fetch("/api/request-photos", {
 
                                         document.querySelector("#pvid-day").innerText = `${months[photoDate.getMonth()]} ${photoDate.getDate()}, ${photoDate.getFullYear()}`;
                                         document.querySelector("#pvid-date-de").innerHTML = `${dateYesterday(photoDate) ? "Yesterday" : days[photoDate.getDay()]}, <span class="cd">${formatDate(photoDate).split(" ")[0]}</span> <span class="cd">${formatDate(photoDate).split(" ")[1]}</span>`
+                                        document.querySelector("#pvid-size").innerText = formatBytes(metadata.size);
                                     })
                             })
                     }

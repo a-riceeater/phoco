@@ -81,18 +81,20 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             res.sendStatus(200);
 
             generateThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName), 144, 31); // buffer
-            generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), 1080, 25); // thumbnail
 
             exifr.parse(finalFilePath)
                 .then((ex) => {
-                    const photoDate = new Date(ex.DateTimeOriginal == undefined ? new Date() : ex.DateTimeOriginal);
+                    const photoDate = new Date((ex && ex.DateTimeOriginal) || new Date());
                     const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
                     if (!photoMetadata[pds]) photoMetadata[pds] = {};
 
                     console.log(ex)
+                    if (!ex) ex = {}
+
+                    generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), (ex.ExifImageHeight || ex.ImageHeight) || 1080, 25); // thumbnail
 
                     photoMetadata[pds][fileName] = {
-                        date: ex.DateTimeOriginal,
+                        date: photoDate,
                         uploaded: new Date(),
                         dateOff: ex.OffsetTimeOriginal,
                         fstop: ex.FNumber,
@@ -103,6 +105,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                         make: ex.Make,
                         model: ex.Model,
                         lensInfo: ex.LensInfo,
+                        size: fs.statSync(finalFilePath).size,
                         gps: {
                             latitudeRef: ex.GPSLatitudeRef,
                             latitude: ex.latitude,
