@@ -8,6 +8,9 @@ const exifr = require('exifr');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
 const { generateThumbnail } = require("./thumbnail");
+const { promisify } = require('util');
+const convert = require('heic-convert');
+
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
@@ -66,7 +69,9 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         await fs.move(chunkPath, destPath);
 
         if (parseInt(chunkNumber, 10) + 1 === parseInt(totalChunks, 10)) {
-            const finalFilePath = path.join(__dirname, 'uploads', fileName);
+            var finalFilePath = path.join(__dirname, 'uploads', fileName);
+            // if (finalFilePath.endsWith(".heif") || finalFilePath.endsWith(".heic")) finalFilePath = finalFilePath.replace(/\.[^/.]+$/, ".jpeg")
+
             const fileStream = fs.createWriteStream(finalFilePath);
 
             for (let i = 0; i < totalChunks; i++) {
@@ -80,84 +85,101 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             await fs.remove(uploadDir);
             res.sendStatus(200);
 
-            generateThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName), 144, 31); // buffer
+            if (finalFilePath.endsWith(".heif") || finalFilePath.endsWith(".heic")) {
+                (async () => {
+                    const inputBuffer = await promisify(fs.readFile)(finalFilePath);
+                    const outputBuffer = await convert({
+                        buffer: inputBuffer,
+                        format: 'PNG',
+                    });
 
-            exifr.parse(finalFilePath)
-                .then((ex) => {
-                    const photoDate = new Date((ex && ex.DateTimeOriginal) || new Date());
-                    const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
-                    if (!photoMetadata[pds]) photoMetadata[pds] = {};
+                    await promisify(fs.writeFile)(finalFilePath.replace(/\.[^/.]+$/, ".png"), outputBuffer);
+                    fs.removeSync(finalFilePath);
+                    finalFilePath = finalFilePath.replace(/\.[^/.]+$/, ".png")
+                    writeData()
+                })();
+            } else writeData()
 
-                    console.log(ex)
-                    if (!ex) ex = {}
+            function writeData() {
+                generateThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName), 144, 31); // buffer
 
-                    generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), (ex.ExifImageHeight || ex.ImageHeight) || 1080, 25); // thumbnail
-
-                    photoMetadata[pds][fileName] = {
-                        date: photoDate,
-                        uploaded: new Date(),
-                        dateOff: ex.OffsetTimeOriginal,
-                        fstop: ex.FNumber,
-                        iso: ex.ISO,
-                        shutter: ex.ExposureTime ? `1/${Math.round(1 / ex.ExposureTime)}` : undefined,
-                        megapixels: calculateMegapixels(ex.ExifImageWidth || ex.ImageWidth, ex.ExifImageHeight || ex.ImageHeight) || undefined,
-                        resolution: `${ex.ExifImageWidth || ex.ImageWidth} x ${ex.ExifImageHeight || ex.ImageHeight}`,
-                        make: ex.Make,
-                        model: ex.Model,
-                        lensInfo: ex.LensInfo,
-                        size: fs.statSync(finalFilePath).size,
-                        gps: {
-                            latitudeRef: ex.GPSLatitudeRef,
-                            latitude: ex.latitude,
-                            longitudeRef: ex.GPSLongitudeRef,
-                            longitude: ex.longitude,
-                            altitudeRef: ex.GPSAltitudeRef ? ex.GPSAltitudeRef[0] : undefined,
-                            altitude: ex.GPSAltitude,
-                            timeStamp: ex.GPSTimeStamp,
-                            speedRef: ex.GPSSpeedRef,
-                            speed: ex.GPSSpeed,
-                            imgDirectionRef: ex.GPSImgDirectionRef,
-                            imgDirection: ex.GPSImgDirection,
-                            destBearingRef: ex.GPSDestBearingRef,
-                            destBearing: ex.GPSDestBearing,
-                            dateStamp: ex.GPSDateStamp,
-                            horizontalPositioningError: ex.GPSHPositioningError
-                        }
-                    }
-
-                    const sortedDb = Object.keys(photoMetadata)
-                        .sort((a, b) => new Date(b) - new Date(a))
-                        .reduce((acc, key) => {
-                            acc[key] = photoMetadata[key];
-                            return acc;
-                        }, {});
-
-                    photoMetadata = sortedDb;
-
-                    writeMetadata();
-                })
-                .catch((err) => {
-                    console.error(err)
-                    return
-                    ffmpeg.ffprobe(finalFilePath, (err, metadata) => {
-                        console.log(metadata);
-                        const photoDate = new Date();
+                exifr.parse(finalFilePath)
+                    .then((ex) => {
+                        const photoDate = new Date((ex && ex.DateTimeOriginal) || new Date());
                         const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
                         if (!photoMetadata[pds]) photoMetadata[pds] = {};
 
-                        var m = metadata.streams[0];
+                        console.log(ex)
+                        if (!ex) ex = {}
+
+                        generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), (ex.ExifImageHeight || ex.ImageHeight) || 1080, 25); // thumbnail
 
                         photoMetadata[pds][fileName] = {
+                            date: photoDate,
                             uploaded: new Date(),
-                            width: m.width,
-                            height: m.height,
-                            megapixels: calculateMegapixels(m.width, m.height),
-
+                            dateOff: ex.OffsetTimeOriginal,
+                            fstop: ex.FNumber,
+                            iso: ex.ISO,
+                            shutter: ex.ExposureTime ? `1/${Math.round(1 / ex.ExposureTime)}` : undefined,
+                            megapixels: calculateMegapixels(ex.ExifImageWidth || ex.ImageWidth, ex.ExifImageHeight || ex.ImageHeight) || undefined,
+                            resolution: `${ex.ExifImageWidth || ex.ImageWidth} x ${ex.ExifImageHeight || ex.ImageHeight}`,
+                            make: ex.Make,
+                            model: ex.Model,
+                            lensInfo: ex.LensInfo,
+                            size: fs.statSync(finalFilePath).size,
+                            gps: {
+                                latitudeRef: ex.GPSLatitudeRef,
+                                latitude: ex.latitude,
+                                longitudeRef: ex.GPSLongitudeRef,
+                                longitude: ex.longitude,
+                                altitudeRef: ex.GPSAltitudeRef ? ex.GPSAltitudeRef[0] : undefined,
+                                altitude: ex.GPSAltitude,
+                                timeStamp: ex.GPSTimeStamp,
+                                speedRef: ex.GPSSpeedRef,
+                                speed: ex.GPSSpeed,
+                                imgDirectionRef: ex.GPSImgDirectionRef,
+                                imgDirection: ex.GPSImgDirection,
+                                destBearingRef: ex.GPSDestBearingRef,
+                                destBearing: ex.GPSDestBearing,
+                                dateStamp: ex.GPSDateStamp,
+                                horizontalPositioningError: ex.GPSHPositioningError
+                            }
                         }
 
-                        writeMetadata()
-                    });
-                })
+                        const sortedDb = Object.keys(photoMetadata)
+                            .sort((a, b) => new Date(b) - new Date(a))
+                            .reduce((acc, key) => {
+                                acc[key] = photoMetadata[key];
+                                return acc;
+                            }, {});
+
+                        photoMetadata = sortedDb;
+
+                        writeMetadata();
+                    })
+                    .catch((err) => {
+                        console.error(err)
+                        return
+                        ffmpeg.ffprobe(finalFilePath, (err, metadata) => {
+                            console.log(metadata);
+                            const photoDate = new Date();
+                            const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
+                            if (!photoMetadata[pds]) photoMetadata[pds] = {};
+
+                            var m = metadata.streams[0];
+
+                            photoMetadata[pds][fileName] = {
+                                uploaded: new Date(),
+                                width: m.width,
+                                height: m.height,
+                                megapixels: calculateMegapixels(m.width, m.height),
+
+                            }
+
+                            writeMetadata()
+                        });
+                    })
+            }
         } else {
             res.sendStatus(200);
         }

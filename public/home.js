@@ -144,14 +144,14 @@ fetch("/api/request-photos", {
 
                 if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
                     ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
-                } else ii.src = `/buffers/${k2}`
+                } else ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                 img.appendChild(ii);
 
                 ii.addEventListener("load", () => {
                     setTimeout(() => {
                         if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
                             ii.src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
-                        } else ii.src = `/thumbnails/${k2}`
+                        } else ii.src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                     }, 800)
                 }, { once: true })
 
@@ -219,7 +219,11 @@ fetch("/api/request-photos", {
                                 } else document.querySelector("#pv-img").src = `/thumbnails/${k2}`
 
                                 document.querySelector("#pv-img").addEventListener("load", () => {
-                                    setTimeout(() => document.querySelector("#pv-img").src = `/photos/${k2}`, 500)
+                                    setTimeout(() => {
+                                        if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
+                                            document.querySelector("#pv-img").src = `/photos/${k2.replace(/\.[^/.]+$/, ".png")}`
+                                        } else document.querySelector("#pv-img").src = `/photos/${k2}`
+                                    }, 500)
                                 }, { once: true })
 
                                 document.querySelector("#pvid-fname").innerText = k2;
