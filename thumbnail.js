@@ -14,7 +14,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
  */
 function generateThumbnail(inputPath, outputPath, height, quality) {
   ffmpeg(inputPath)
-    .output(outputPath)
+    .output(outputPath.replace(/\.[^/.]+$/, ".jpeg"))
     .outputOptions([
       `-vf scale=-1:${height}`, 
       `-qscale:v ${quality}`

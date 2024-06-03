@@ -143,14 +143,14 @@ fetch("/api/request-photos", {
                 const ii = document.createElement("img");
 
                 if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
-                    fetchAndConvertHeic(`/buffers/${k2}`, ii);
+                    ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
                 } else ii.src = `/buffers/${k2}`
                 img.appendChild(ii);
 
                 ii.addEventListener("load", () => {
                     setTimeout(() => {
                         if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
-                            fetchAndConvertHeic(`/thumbnails/${k2}`, ii);
+                            ii.src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
                         } else ii.src = `/thumbnails/${k2}`
                     }, 800)
                 }, { once: true })
@@ -212,9 +212,14 @@ fetch("/api/request-photos", {
                             .then((id) => {
                                 navigate("/photo/" + id, ii.src.split("/").pop())
                                 document.querySelector("#photo-view").style.display = "block"
-                                document.querySelector("#pv-img").src = `/thumbnails/${ii.src.split("/").pop()}`
+
+                                if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
+                                    console.log("ends with")
+                                    document.querySelector("#pv-img").src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
+                                } else document.querySelector("#pv-img").src = `/thumbnails/${k2}`
+
                                 document.querySelector("#pv-img").addEventListener("load", () => {
-                                    setTimeout(() => document.querySelector("#pv-img").src = `/photos/${ii.src.split("/").pop()}`, 500)
+                                    setTimeout(() => document.querySelector("#pv-img").src = `/photos/${k2}`, 500)
                                 }, { once: true })
 
                                 document.querySelector("#pvid-fname").innerText = k2;
