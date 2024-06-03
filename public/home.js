@@ -216,7 +216,7 @@ fetch("/api/request-photos", {
                                 if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
                                     console.log("ends with")
                                     document.querySelector("#pv-img").src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
-                                } else document.querySelector("#pv-img").src = `/thumbnails/${k2}`
+                                } else document.querySelector("#pv-img").src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
 
                                 document.querySelector("#pv-img").addEventListener("load", () => {
                                     setTimeout(() => {

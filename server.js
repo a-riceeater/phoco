@@ -265,6 +265,10 @@ app.get("/api/request-metadata/:date/:name", (req, res) => {
     res.send(photoMetadata[date][req.params.name]);
 })
 
+app.get("/auth/login", (req, res) => {
+    res.sendFile(path.join(__dirname, "html", "login.html"));
+})
+
 app.listen(7700, () => {
     console.log("Phoco listening on :7000")
 })
