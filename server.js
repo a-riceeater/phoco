@@ -10,6 +10,7 @@ const ffmpegPath = require('ffmpeg-static');
 const { generateThumbnail } = require("./thumbnail");
 const { promisify } = require('util');
 const convert = require('heic-convert');
+const Crypto = require("crypto-js")
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -267,6 +268,10 @@ app.get("/api/request-metadata/:date/:name", (req, res) => {
 
 app.get("/auth/login", (req, res) => {
     res.sendFile(path.join(__dirname, "html", "login.html"));
+})
+
+app.post("/api/auth/login", (req, res) => {
+    const hash = Crypto.SHA256(req.body.password).toString();
 })
 
 app.listen(7700, () => {
