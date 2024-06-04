@@ -66,6 +66,7 @@ function verifyToken(req, res, next) {
     else {
         if (tokens[token]) {
             res.username = tokens[token];
+            res.name = tokens[token].name
             next();
         } else {
             res.redirect("/auth/login");
@@ -311,7 +312,7 @@ app.post("/api/auth/login", authAlready, (req, res) => {
     const hash = Crypto.SHA256(req.body.password).toString();
 
     if (!req.body.username || !credentials[req.body.username]) return res.send({ login: false });
-    if (credentials[req.body.username] == hash) {
+    if (credentials[req.body.username].password == hash) {
         const token = generateToken();
         tokens[token] = req.body.username;
         res.cookie("token", token);
@@ -319,10 +320,13 @@ app.post("/api/auth/login", authAlready, (req, res) => {
     } else res.send({ login: false });
 })
 
-app.get("/request-username", verifyToken, (req, res) => {
-
+app.get("/request-uinfo", verifyToken, (req, res) => {
+    res.send({
+        name: res.name,
+        username: res.username
+    })
 })
 
 app.listen(7700, () => {
-    console.log("Phoco listening on :7000")
+    console.log("Phoco listening on :7700")
 })
