@@ -68,3 +68,11 @@ input {
     left: 50%;
     transform: translate(-50%, 0%);
 }
+
+#incorrect {
+    color: rgb(252, 118, 118);
+    text-align: left;
+    margin-left: 43px;
+    opacity: 0;
+    transition: .5s;
+}

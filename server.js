@@ -270,8 +270,16 @@ app.get("/auth/login", (req, res) => {
     res.sendFile(path.join(__dirname, "html", "login.html"));
 })
 
+const credentials = JSON.parse(fs.readFileSync(path.join(__dirname, "credentials.json"), "utf8"));
+
 app.post("/api/auth/login", (req, res) => {
     const hash = Crypto.SHA256(req.body.password).toString();
+
+    if (!req.body.username || !credentials[req.body.username]) return res.send({ login: false });
+    if (credentials[req.body.username] == hash) {
+        res.cookie("token", "a");
+        res.send({ login: true });
+    } else res.send({ login: false });
 })
 
 app.listen(7700, () => {

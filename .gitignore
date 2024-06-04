@@ -3,3 +3,4 @@ uploads
 thumbnails
 buffers
 .env
+credentials.json
