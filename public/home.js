@@ -223,6 +223,83 @@ fetch("/api/request-photos", {
                                         if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
                                             document.querySelector("#pv-img").src = `/photos/${k2.replace(/\.[^/.]+$/, ".png")}`
                                         } else document.querySelector("#pv-img").src = `/photos/${k2}`
+
+                                        let scale = 1;
+                                        const zoomSpeed = 0.1;
+
+                                        function zoom(event) {
+                                            event.preventDefault();
+                                        
+                                            const { clientX, clientY } = event;
+                                            const { left, top, width, height } = document.querySelector("#pv-img").getBoundingClientRect();
+                                            const offsetX = clientX - left;
+                                            const offsetY = clientY - top;
+                                            const dx = offsetX / width;
+                                            const dy = offsetY / height;
+                                        
+                                            const wheel = event.deltaY < 0 ? 1 : -1;
+                                            const zoomFactor = (1 + wheel * zoomSpeed);
+                                            scale *= zoomFactor;
+                                        
+                                            scale = Math.min(Math.max(scale, 1), 7.5);
+                                        
+                                            const originX = (dx * 100).toFixed(2) + '%';
+                                            const originY = (dy * 100).toFixed(2) + '%';
+                                        
+                                            document.querySelector("#pv-img").style.transformOrigin = `${originX} ${originY}`;
+                                            document.querySelector("#pv-img").style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+                                            if (scale > 1) {
+                                                document.querySelector("#pv-img").style.cursor = 'grab';
+                                            } else {
+                                                document.querySelector("#pv-img").style.cursor = 'default';
+                                            }
+                                        }
+                                        
+                                        function startPan(event) {
+                                            if (scale <= 1) return;
+
+                                            event.preventDefault();
+                                            document.querySelector("#pv-img").style.cursor = 'grabbing';
+                                        
+                                            let startX = event.clientX;
+                                            let startY = event.clientY;
+                                        
+                                            function pan(event) {
+                                                const dx = event.clientX - startX;
+                                                const dy = event.clientY - startY;
+                                        
+                                                const currentTransform = document.querySelector("#pv-img").style.transform;
+                                                const translateMatch = currentTransform.match(/translate\((-?\d+\.?\d*)px, (-?\d+\.?\d*)px\)/);
+                                        
+                                                let currentTranslateX = 0;
+                                                let currentTranslateY = 0;
+                                                if (translateMatch) {
+                                                    currentTranslateX = parseFloat(translateMatch[1]);
+                                                    currentTranslateY = parseFloat(translateMatch[2]);
+                                                }
+                                        
+                                                const newTranslateX = currentTranslateX + dx;
+                                                const newTranslateY = currentTranslateY + dy;
+                                        
+                                                document.querySelector("#pv-img").style.transform = `translate(${newTranslateX}px, ${newTranslateY}px) scale(${scale})`;
+                                        
+                                                startX = event.clientX;
+                                                startY = event.clientY;
+                                            }
+                                        
+                                            function stopPan() {
+                                                document.removeEventListener('mousemove', pan);
+                                                document.removeEventListener('mouseup', stopPan);
+                                                document.querySelector("#pv-img").style.cursor = 'grab';
+                                            }
+                                        
+                                            document.addEventListener('mousemove', pan);
+                                            document.addEventListener('mouseup', stopPan);
+                                        }
+
+                                        document.querySelector("#pv-img").addEventListener('wheel', zoom);
+                                        document.querySelector("#pv-img").addEventListener('mousedown', startPan);
                                     }, 500)
                                 }, { once: true })
 
