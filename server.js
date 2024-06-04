@@ -50,7 +50,7 @@ Date.prototype.subtractDays = function (days) {
     return date;
 }
 
-app.get("/", (req, res) => {
+app.get("/", verifyToken, (req, res) => {
     res.sendFile(path.join(__dirname, "html", "home.html"));
 })
 
@@ -58,7 +58,32 @@ const calculateMegapixels = (width, height) => {
     return ((width * height) / 1000000).toFixed(1);
 };
 
-app.post('/upload', upload.single('file'), async (req, res) => {
+function verifyToken(req, res, next) {
+    if (!req.headers.cookie) return res.redirect("/auth/login")
+    if (!req.headers.cookie.includes("token=")) return res.redirect("/auth/login")
+    const token = req.headers.cookie.split("token=")[1];
+    if (!token) return res.redirect("/auth/login")
+    else {
+        if (tokens[token]) {
+            res.username = tokens[token];
+            next();
+        } else {
+            res.redirect("/auth/login");
+        }
+    }
+}
+
+function authAlready(req, res, next) {
+    if (!req.headers.cookie) return next();
+    if (req.headers.cookie.includes("token=")) {
+      const token = req.headers.cookie.split("token=")[1];
+      if (tokens[token]) {
+        res.redirect("/");
+      } else return next();
+    }
+  }
+
+app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
     const { chunkNumber, totalChunks, fileName } = req.body;
     const chunkPath = req.file.path;
     const uploadDir = path.join(__dirname, 'uploads', fileName + '_chunks');
@@ -232,7 +257,7 @@ const findPhotosForDates = (start, days, photoMetadata) => {
     return files;
 };
 
-app.post('/api/request-photos', (req, res) => {
+app.post('/api/request-photos', verifyToken, (req, res) => {
     const { start, days } = req.body;
     if (!start || !days) {
         return res.sendStatus(400);
@@ -253,11 +278,11 @@ app.post('/api/request-photos', (req, res) => {
     res.send(files);
 });
 
-app.get("/photo/:id", (req, res) => {
+app.get("/photo/:id", verifyToken, (req, res) => {
     res.sendFile(path.join(__dirname, "html", "home.html"));
 })
 
-app.get("/api/request-metadata/:date/:name", (req, res) => {
+app.get("/api/request-metadata/:date/:name", verifyToken, (req, res) => {
     if (!req.params.date || !req.params.name) return res.sendStatus(400);
 
     const date = req.params.date.replaceAll("-", "/");
@@ -266,7 +291,7 @@ app.get("/api/request-metadata/:date/:name", (req, res) => {
     res.send(photoMetadata[date][req.params.name]);
 })
 
-app.get("/auth/login", (req, res) => {
+app.get("/auth/login", authAlready, (req, res) => {
     res.sendFile(path.join(__dirname, "html", "login.html"));
 })
 
@@ -276,13 +301,13 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIKLMNOPQRSTUVWXYZ12345678901
 
 const generateToken = () => {
     let result = ""
-    for (let i = 0;  i < 26; i++) {
+    for (let i = 0; i < 26; i++) {
         result += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
     }
     return result
 }
 
-app.post("/api/auth/login", (req, res) => {
+app.post("/api/auth/login", authAlready, (req, res) => {
     const hash = Crypto.SHA256(req.body.password).toString();
 
     if (!req.body.username || !credentials[req.body.username]) return res.send({ login: false });
@@ -292,6 +317,10 @@ app.post("/api/auth/login", (req, res) => {
         res.cookie("token", token);
         res.send({ login: true });
     } else res.send({ login: false });
+})
+
+app.get("/request-username", verifyToken, (req, res) => {
+
 })
 
 app.listen(7700, () => {
