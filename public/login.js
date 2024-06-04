@@ -2,7 +2,24 @@ function login() {
     const username = document.querySelector("#username-input").value.trim();
     const password = document.querySelector("#password-input").value;
 
-    if (!username || !password) incorrect()
+    if (!username || !password) return incorrect();
+
+    fetch("/api/auth/login", {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+    })
+        .then((data) => data.json())
+        .then((data) => {
+            console.log(data)
+            if (data.login) window.location = "/"
+            else incorrect();
+        })
 }
 
 function incorrect() {

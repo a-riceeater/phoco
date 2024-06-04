@@ -271,13 +271,25 @@ app.get("/auth/login", (req, res) => {
 })
 
 const credentials = JSON.parse(fs.readFileSync(path.join(__dirname, "credentials.json"), "utf8"));
+const tokens = {};
+const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIKLMNOPQRSTUVWXYZ12345678901234567890"
+
+const generateToken = () => {
+    let result = ""
+    for (let i = 0;  i < 26; i++) {
+        result += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+    }
+    return result
+}
 
 app.post("/api/auth/login", (req, res) => {
     const hash = Crypto.SHA256(req.body.password).toString();
 
     if (!req.body.username || !credentials[req.body.username]) return res.send({ login: false });
     if (credentials[req.body.username] == hash) {
-        res.cookie("token", "a");
+        const token = generateToken();
+        tokens[token] = req.body.username;
+        res.cookie("token", token);
         res.send({ login: true });
     } else res.send({ login: false });
 })
