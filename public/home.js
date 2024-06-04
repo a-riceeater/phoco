@@ -230,80 +230,74 @@ fetch("/api/request-photos", {
 
                                         let scale = 1;
                                         const zoomSpeed = 0.1;
-                                        let initialX = -50, initialY = -50;
-                                        let startX, startY;
 
                                         function zoom(event) {
                                             event.preventDefault();
-
+                                        
                                             const { clientX, clientY } = event;
                                             const { left, top, width, height } = document.querySelector("#pv-img").getBoundingClientRect();
                                             const offsetX = clientX - left;
                                             const offsetY = clientY - top;
                                             const dx = offsetX / width;
                                             const dy = offsetY / height;
-
+                                        
                                             const wheel = event.deltaY < 0 ? 1 : -1;
                                             const zoomFactor = (1 + wheel * zoomSpeed);
                                             scale *= zoomFactor;
-
-                                            scale = Math.min(Math.max(scale, 1), 6);
-
+                                        
+                                            scale = Math.min(Math.max(scale, 1), 7.5);
+                                        
                                             const originX = (dx * 100).toFixed(2) + '%';
                                             const originY = (dy * 100).toFixed(2) + '%';
-
+                                        
                                             document.querySelector("#pv-img").style.transformOrigin = `${originX} ${originY}`;
-                                            document.querySelector("#pv-img").style.transform = `translate(${initialX}%, ${initialY}%) scale(${scale})`;
+                                            document.querySelector("#pv-img").style.transform = `translate(-50%, -50%) scale(${scale})`;
 
                                             if (scale > 1) {
-                                                document.querySelector("#pv-img").style.cursor = 'grab';
+                                                document.querySelector("#pv-im").style.cursor = 'grab';
                                             } else {
-                                                document.querySelector("#pv-img").style.cursor = 'default';
-                                                document.querySelector("#pv-img").style.transform = `translate(-50%, -50%);`;
+                                                document.querySelector("#pv-im").style.cursor = 'default';
                                             }
                                         }
-
+                                        
                                         function startPan(event) {
                                             if (scale <= 1) return;
 
                                             event.preventDefault();
-                                            document.querySelector("#pv-img").style.cursor = 'grabbing';
-
-                                            startX = event.clientX;
-                                            startY = event.clientY;
-
-                                            const transform = document.querySelector("#pv-img").style.transform;
-                                            const translateMatch = transform.match(/translate\((-?\d+\.?\d*)%, (-?\d+\.?\d*)%\)/);
-
-                                            if (translateMatch) {
-                                                initialX = parseFloat(translateMatch[1]);
-                                                initialY = parseFloat(translateMatch[2]);
-                                            } else {
-                                                initialX = -50;
-                                                initialY = -50;
-                                            }
-
+                                            document.querySelector("#pv-im").style.cursor = 'grabbing';
+                                        
+                                            let startX = event.clientX;
+                                            let startY = event.clientY;
+                                        
                                             function pan(event) {
-                                                const dx = (event.clientX - startX) / window.innerWidth * 150;
-                                                const dy = (event.clientY - startY) / window.innerHeight * 150;
-
-                                                const newTranslateX = initialX + dx;
-                                                const newTranslateY = initialY + dy;
-
-                                                document.querySelector("#pv-img").style.transform = `translate(${newTranslateX}%, ${newTranslateY}%) scale(${scale})`;
+                                                const dx = event.clientX - startX;
+                                                const dy = event.clientY - startY;
+                                        
+                                                const currentTransform = document.querySelector("#pv-img").style.transform;
+                                                const translateMatch = currentTransform.match(/translate\((-?\d+\.?\d*)px, (-?\d+\.?\d*)px\)/);
+                                        
+                                                let currentTranslateX = 0;
+                                                let currentTranslateY = 0;
+                                                if (translateMatch) {
+                                                    currentTranslateX = parseFloat(translateMatch[1]);
+                                                    currentTranslateY = parseFloat(translateMatch[2]);
+                                                }
+                                        
+                                                const newTranslateX = currentTranslateX + dx;
+                                                const newTranslateY = currentTranslateY + dy;
+                                        
+                                                document.querySelector("#pv-img").style.transform = `translate(${newTranslateX}px, ${newTranslateY}px) scale(${scale})`;
+                                        
+                                                startX = event.clientX;
+                                                startY = event.clientY;
                                             }
-
+                                        
                                             function stopPan() {
                                                 document.removeEventListener('mousemove', pan);
                                                 document.removeEventListener('mouseup', stopPan);
                                                 document.querySelector("#pv-img").style.cursor = 'grab';
-
-                                                const dx = (event.clientX - startX) / window.innerWidth * 150;
-                                                const dy = (event.clientY - startY) / window.innerHeight * 150;
-                                                initialX += dx;
-                                                initialY += dy;
                                             }
-
+                                        
                                             document.addEventListener('mousemove', pan);
                                             document.addEventListener('mouseup', stopPan);
                                         }
@@ -376,7 +370,7 @@ document.querySelector("#pcv-info").addEventListener("click", () => {
 document.querySelector("#pv-back").addEventListener("click", () => {
     document.querySelector("#photo-view").style.display = "none"
     navigate("/", "Photos")
-})
+})  
 
 fetch("/api/request-uinfo", {
     method: "GET",
@@ -384,7 +378,7 @@ fetch("/api/request-uinfo", {
         "Content-Type": "application/json"
     }
 })
-    .then((d) => d.json())
-    .then((d) => {
-        console.log(d)
-    })
+.then((d) => d.json())
+.then((d) => {
+    console.log(d)
+})
