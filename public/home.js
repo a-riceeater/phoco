@@ -141,6 +141,7 @@ fetch("/api/request-photos", {
                 dateContainer.appendChild(img);
 
                 const ii = document.createElement("img");
+                ii.setAttribute("loading", "lazy");
 
                 if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
                     ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
