@@ -218,6 +218,8 @@ fetch("/api/request-photos", {
                                     document.querySelector("#pv-img").src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                                 } else document.querySelector("#pv-img").src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
 
+                                document.querySelector("#pv-img").style.transform = `translate(-50%, -50%) scale(${1})`;
+
                                 document.querySelector("#pv-img").addEventListener("load", () => {
                                     setTimeout(() => {
                                         if (k2.endsWith(".heic") || k2.endsWith(".heif")) {

@@ -371,6 +371,15 @@ body {
     color: lightgray;
 }
 
+.lp-op:hover {
+    background-color: #36383b;
+    color: var(--select);
+}
+
+.lp-op:hover > svg {
+    fill: var(--select);
+}
+
 .lp-op > svg {
     height: 25px;
     width: 20px;
@@ -774,4 +783,10 @@ body {
 
 .aperture {
     font-style: italic;
+}
+
+#lpop-t {
+    margin-left: 25px;
+    color: lightgray;
+    text-transform: uppercase;
 }
