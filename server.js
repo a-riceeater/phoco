@@ -65,7 +65,7 @@ function verifyToken(req, res, next) {
     if (!token) return res.redirect("/auth/login")
     else {
         if (tokens[token]) {
-            res.username = tokens[token];
+            res.username = tokens[token].username;
             res.name = tokens[token].name
             next();
         } else {
@@ -314,13 +314,13 @@ app.post("/api/auth/login", authAlready, (req, res) => {
     if (!req.body.username || !credentials[req.body.username]) return res.send({ login: false });
     if (credentials[req.body.username].password == hash) {
         const token = generateToken();
-        tokens[token] = req.body.username;
+        tokens[token] = { name: credentials[req.body.username].name, username: req.body.username }
         res.cookie("token", token);
         res.send({ login: true });
     } else res.send({ login: false });
 })
 
-app.get("/request-uinfo", verifyToken, (req, res) => {
+app.get("/api/request-uinfo", verifyToken, (req, res) => {
     res.send({
         name: res.name,
         username: res.username

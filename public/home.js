@@ -370,3 +370,14 @@ document.querySelector("#pv-back").addEventListener("click", () => {
     document.querySelector("#photo-view").style.display = "none"
     navigate("/", "Photos")
 })  
+
+fetch("/api/request-uinfo", {
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json"
+    }
+})
+.then((d) => d.json())
+.then((d) => {
+    console.log(d)
+})
