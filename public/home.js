@@ -259,6 +259,7 @@ fetch("/api/request-photos", {
                                                 document.querySelector("#pv-img").style.cursor = 'grab';
                                             } else {
                                                 document.querySelector("#pv-img").style.cursor = 'default';
+                                                document.querySelector("#pv-img").style.transform = `translate(-50%, -50%);`;
                                             }
                                         }
 
@@ -307,8 +308,8 @@ fetch("/api/request-photos", {
                                             document.addEventListener('mouseup', stopPan);
                                         }
 
-                                        document.querySelector("#pv-img").addEventListener('wheel', zoom);
-                                        document.querySelector("#pv-img").addEventListener('mousedown', startPan);
+                                        document.querySelector("#pv-im").addEventListener('wheel', zoom);
+                                        document.querySelector("#pv-im").addEventListener('mousedown', startPan);
                                     }, 500)
                                 }, { once: true })
 
