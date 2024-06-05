@@ -64,8 +64,8 @@ Date.prototype.subtractDays = function (days) {
 }
 
 app.use(cookieParser());
-app.use(csrf({ cookie: true }));
-
+const csrfProtection = csrf({ cookie: true });
+app.use(csrfProtection);
 const loginLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 5, 
@@ -83,31 +83,20 @@ const calculateMegapixels = (width, height) => {
 
 
 function verifyToken(req, res, next) {
-    if (dev) return next()
-    if (!req.headers.cookie) return res.redirect("/auth/login")
-    if (!req.headers.cookie.includes("token=")) return res.redirect("/auth/login")
-    const token = req.headers.cookie.split("token=")[1];
-    if (!token) return res.redirect("/auth/login")
-    else {
-        if (tokens[token]) {
-            res.username = tokens[token].username;
-            res.name = tokens[token].name
-            next();
-        } else {
-            res.redirect("/auth/login");
-        }
-    }
+    if (dev) return next();
+    const token = req.cookies.token;
+    if (!token || !tokens[token]) return res.redirect("/auth/login");
+    const userData = tokens[token];
+    res.username = userData.username;
+    res.name = userData.name;
+    next();
 }
 
 function authAlready(req, res, next) {
-    if (!req.headers.cookie) return next();
-    if (req.headers.cookie.includes("token=")) {
-      const token = req.headers.cookie.split("token=")[1];
-      if (tokens[token]) {
-        res.redirect("/");
-      } else return next();
-    }
-  }
+    const token = req.cookies.token;
+    if (token && tokens[token]) return res.redirect("/");
+    next();
+}
 
 app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
     const { chunkNumber, totalChunks, fileName } = req.body;
@@ -317,8 +306,10 @@ app.get("/api/request-metadata/:date/:name", verifyToken, (req, res) => {
     res.send(photoMetadata[date][req.params.name]);
 })
 
-app.get("/auth/login", authAlready, (req, res) => {
-    res.sendFile(path.join(__dirname, "html", "login.html"));
+app.get("/auth/login", authAlready, csrfProtection, (req, res) => {
+    var data = fs.readFileSync(path.join(__dirname, "html", "login.html"), "utf8")
+    data = data.replaceAll("{{ csrfToken }}", req.csrfToken())
+    res.send(data);
 })
 
 const credentials = JSON.parse(fs.readFileSync(path.join(__dirname, "credentials.json"), "utf8"));
@@ -333,17 +324,34 @@ const generateToken = () => {
     return result
 }
 
-app.post("/api/auth/login", loginLimiter, authAlready, (req, res) => {
-    const hash = Crypto.SHA256(req.body.password).toString();
+const bcrypt = require('bcrypt');
+const { body, validationResult } = require('express-validator');
 
-    if (!req.body.username || !credentials[req.body.username] || !req.body.password) return res.send({ login: false, error: "Incorrect username or password" });
-    if (credentials[req.body.username].password == hash) {
-        const token = generateToken();
-        tokens[token] = { name: credentials[req.body.username].name, username: req.body.username }
+const loginValidationRules = [
+    body('username').trim().notEmpty().withMessage('Invalid username or password'),
+    body('password').notEmpty().withMessage('Invalid username or password')
+];
+
+app.post("/api/auth/login", authAlready, loginLimiter, loginValidationRules, csrfProtection, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.json({ login: false, error: 'Invalid username or password' });
+    }
+
+    const { username, password } = req.body;
+    if (!username || !credentials[username]) return res.json({ login: false, error: 'Invalid username or password' });
+
+    const hashedPassword = credentials[username].password;
+    const isPasswordValid = await bcrypt.compare(password, hashedPassword);
+    if (isPasswordValid) {
+        const token = crypto.randomBytes(64).toString('hex');
+        tokens[token] = { name: credentials[username].name, username: username };
         res.cookie("token", token, { httpOnly: true, secure: true });
-        res.send({ login: true });
-    } else res.send({ login: false, error: "Incorrect username or password" });
-})
+        return res.json({ login: true });
+    } else {
+        return res.json({ login: false, error: 'Invalid username or password' });
+    }
+});
 
 app.get("/api/request-uinfo", verifyToken, (req, res) => {
     res.send({

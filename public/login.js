@@ -1,13 +1,15 @@
 function login() {
     const username = document.querySelector("#username-input").value.trim();
     const password = document.querySelector("#password-input").value;
+    const csrfToken = document.querySelector("#csrf-token").value;
 
     if (!username || !password) return incorrect();
 
     fetch("/api/auth/login", {
         method: 'POST',
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "CSRF-Token": csrfToken
         },
         body: JSON.stringify({
             username: username,
