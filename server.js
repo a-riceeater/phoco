@@ -337,6 +337,10 @@ app.get("/api/request-uinfo", verifyToken, (req, res) => {
     })
 })
 
+app.get("/api/validate-phoco", (req, res) => {
+    res.sendStatus(200);
+})
+
 app.listen(7700, () => {
     console.log("Phoco listening on :7700")
 })
