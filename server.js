@@ -16,11 +16,6 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
 const dev = true
-
-app.use(express.static(path.join(__dirname, "public")));
-app.use("/photos", express.static(path.join(__dirname, "uploads")));
-app.use("/thumbnails", express.static(path.join(__dirname, "thumbnails")));
-app.use("/buffers", express.static(path.join(__dirname, "buffers")));
 const cors=require("cors");
 const corsOptions ={
    origin:'*', 
@@ -29,6 +24,11 @@ const corsOptions ={
 }
 
 app.use(cors(corsOptions))
+
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/photos", express.static(path.join(__dirname, "uploads")));
+app.use("/thumbnails", express.static(path.join(__dirname, "thumbnails")));
+app.use("/buffers", express.static(path.join(__dirname, "buffers")));
 
 /*
 app.use(bodyParser.json({ limit: '2mb' }));
