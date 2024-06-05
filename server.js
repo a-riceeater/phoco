@@ -65,7 +65,7 @@ Date.prototype.subtractDays = function (days) {
 
 app.use(cookieParser());
 const csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
+//app.use(csrfProtection);
 const loginLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 5, 
@@ -344,7 +344,7 @@ app.post("/api/auth/login", authAlready, loginLimiter, loginValidationRules, csr
     const hashedPassword = credentials[username].password;
     const isPasswordValid = await bcrypt.compare(password, hashedPassword);
     if (isPasswordValid) {
-        const token = crypto.randomBytes(64).toString('hex');
+        const token = generateToken()
         tokens[token] = { name: credentials[username].name, username: username };
         res.cookie("token", token, { httpOnly: true, secure: true });
         return res.json({ login: true });
