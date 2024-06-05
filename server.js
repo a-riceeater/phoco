@@ -15,11 +15,20 @@ const Crypto = require("crypto-js")
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
+const dev = true
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(path.join(__dirname, "uploads")));
 app.use("/thumbnails", express.static(path.join(__dirname, "thumbnails")));
 app.use("/buffers", express.static(path.join(__dirname, "buffers")));
+const cors=require("cors");
+const corsOptions ={
+   origin:'*', 
+   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+   allowedHeaders: ['Content-Type', 'Authorization']
+}
+
+app.use(cors(corsOptions))
 
 /*
 app.use(bodyParser.json({ limit: '2mb' }));
@@ -59,6 +68,7 @@ const calculateMegapixels = (width, height) => {
 };
 
 function verifyToken(req, res, next) {
+    if (dev) return next()
     if (!req.headers.cookie) return res.redirect("/auth/login")
     if (!req.headers.cookie.includes("token=")) return res.redirect("/auth/login")
     const token = req.headers.cookie.split("token=")[1];
