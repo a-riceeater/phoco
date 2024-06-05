@@ -11,7 +11,6 @@ const { generateThumbnail } = require("./thumbnail");
 const { promisify } = require('util');
 const convert = require('heic-convert');
 const Crypto = require("crypto-js")
-const csrf = require('csurf');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 
@@ -64,8 +63,6 @@ Date.prototype.subtractDays = function (days) {
 }
 
 app.use(cookieParser());
-const csrfProtection = csrf({ cookie: true });
-//app.use(csrfProtection);
 const loginLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 5, 
@@ -306,10 +303,8 @@ app.get("/api/request-metadata/:date/:name", verifyToken, (req, res) => {
     res.send(photoMetadata[date][req.params.name]);
 })
 
-app.get("/auth/login", authAlready, csrfProtection, (req, res) => {
-    var data = fs.readFileSync(path.join(__dirname, "html", "login.html"), "utf8")
-    data = data.replaceAll("{{ csrfToken }}", req.csrfToken())
-    res.send(data);
+app.get("/auth/login", authAlready, (req, res) => {
+    res.sendFile(path.join(__dirname, "html", "login.html"));
 })
 
 const credentials = JSON.parse(fs.readFileSync(path.join(__dirname, "credentials.json"), "utf8"));
@@ -332,7 +327,7 @@ const loginValidationRules = [
     body('password').notEmpty().withMessage('Invalid username or password')
 ];
 
-app.post("/api/auth/login", authAlready, loginLimiter, loginValidationRules, csrfProtection, async (req, res) => {
+app.post("/api/auth/login", authAlready, loginLimiter, loginValidationRules, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.json({ login: false, error: 'Invalid username or password' });
