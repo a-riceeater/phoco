@@ -65,7 +65,7 @@ Date.prototype.subtractDays = function (days) {
 
 app.use(cookieParser());
 const csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
+//app.use(csrfProtection);
 const loginLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 5, 
