@@ -11,6 +11,9 @@ const { generateThumbnail } = require("./thumbnail");
 const { promisify } = require('util');
 const convert = require('heic-convert');
 const Crypto = require("crypto-js")
+const csrf = require('csurf');
+const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
@@ -29,6 +32,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(path.join(__dirname, "uploads")));
 app.use("/thumbnails", express.static(path.join(__dirname, "thumbnails")));
 app.use("/buffers", express.static(path.join(__dirname, "buffers")));
+
 
 /*
 app.use(bodyParser.json({ limit: '2mb' }));
@@ -59,6 +63,16 @@ Date.prototype.subtractDays = function (days) {
     return date;
 }
 
+app.use(cookieParser());
+app.use(csrf({ cookie: true }));
+
+const loginLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000,
+    max: 5, 
+    message: { login: false, error: "Too many login attempts, please try again later." }
+});
+
+
 app.get("/", verifyToken, (req, res) => {
     res.sendFile(path.join(__dirname, "html", "home.html"));
 })
@@ -66,6 +80,7 @@ app.get("/", verifyToken, (req, res) => {
 const calculateMegapixels = (width, height) => {
     return ((width * height) / 1000000).toFixed(1);
 };
+
 
 function verifyToken(req, res, next) {
     if (dev) return next()
@@ -318,16 +333,16 @@ const generateToken = () => {
     return result
 }
 
-app.post("/api/auth/login", authAlready, (req, res) => {
+app.post("/api/auth/login", loginLimiter, authAlready, (req, res) => {
     const hash = Crypto.SHA256(req.body.password).toString();
 
-    if (!req.body.username || !credentials[req.body.username]) return res.send({ login: false });
+    if (!req.body.username || !credentials[req.body.username] || !req.body.password) return res.send({ login: false, error: "Incorrect username or password" });
     if (credentials[req.body.username].password == hash) {
         const token = generateToken();
         tokens[token] = { name: credentials[req.body.username].name, username: req.body.username }
-        res.cookie("token", token);
+        res.cookie("token", token, { httpOnly: true, secure: true });
         res.send({ login: true });
-    } else res.send({ login: false });
+    } else res.send({ login: false, error: "Incorrect username or password" });
 })
 
 app.get("/api/request-uinfo", verifyToken, (req, res) => {

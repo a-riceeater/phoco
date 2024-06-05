@@ -18,12 +18,14 @@ function login() {
         .then((data) => {
             console.log(data)
             if (data.login) window.location = "/"
-            else incorrect();
+            else incorrect(data.error);
         })
 }
 
-function incorrect() {
+function incorrect(error) {
     document.querySelector("#incorrect").style.opacity = "0"
+    if (error) document.querySelector("#incorrect").innerText = error
+    else document.querySelector("#incorrect").innerText = "Incorrect username or password"
     setTimeout(() => document.querySelector("#incorrect").style.opacity = "1", 500);
 }
 
