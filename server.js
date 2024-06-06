@@ -18,11 +18,11 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
 const dev = false
-const cors=require("cors");
-const corsOptions ={
-   origin:'*', 
-   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-   allowedHeaders: ['Content-Type', 'Authorization']
+const cors = require("cors");
+const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }
 
 app.use(cors(corsOptions))
@@ -65,7 +65,7 @@ Date.prototype.subtractDays = function (days) {
 app.use(cookieParser());
 const loginLimiter = rateLimit({
     windowMs: 5 * 60 * 1000,
-    max: 5, 
+    max: 5,
     message: { login: false, error: "Too many login attempts, please try again later." }
 });
 
@@ -82,11 +82,21 @@ const calculateMegapixels = (width, height) => {
 function verifyToken(req, res, next) {
     if (dev) return next();
     const token = req.cookies.token;
-    if (!token || !tokens[token]) return res.redirect("/auth/login");
-    const userData = tokens[token];
-    res.username = userData.username;
-    res.name = userData.name;
-    next();
+    if (!token || !tokens[token]) {
+        if (!req.headers.authentication) return res.redirect("/auth/login");
+        console.log(req.headers.authentication)
+        var t = req.headers.authentication.split(" ").pop()
+        if (!t) return res.redirect("/auth/login")
+        if (tokens[t]) auth()
+        return
+    }
+    function auth() {
+        const userData = tokens[token];
+        res.username = userData.username;
+        res.name = userData.name;
+        next()
+    }
+    auth();
 }
 
 function authAlready(req, res, next) {
@@ -342,7 +352,7 @@ app.post("/api/auth/login", authAlready, loginLimiter, loginValidationRules, asy
         const token = generateToken()
         tokens[token] = { name: credentials[username].name, username: username };
         res.cookie("token", token, { httpOnly: true, secure: true });
-        return res.json({ login: true });
+        return res.json({ login: true, token: token });
     } else {
         return res.json({ login: false, error: 'Invalid username or password' });
     }
