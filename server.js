@@ -17,7 +17,7 @@ const cookieParser = require('cookie-parser');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
-const dev = true
+const dev = false
 const cors=require("cors");
 const corsOptions ={
    origin:'*', 
