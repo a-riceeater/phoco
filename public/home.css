@@ -650,7 +650,7 @@ body {
     transition: .3s;
 }
 
-#pv-img {
+#pv-img, #pv-video {
     position: absolute;
     left: 50%;
     top: 50%;

@@ -52,6 +52,7 @@ const pds = `${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDat
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const videoFileTypes = ["mp4", "m4v", "mkv", "mov", "wmv", "avi", "flv", "webm", "mpg", "mpeg", "3gp", "ogv", "mxf", "mts", "m2ts", "vob", "asf", "rm", "rmvb", "f4v", "f4p", "f4a", "f4b", "divx"];
 
 const dateYesterday = (date) => {
     var yesterday = new Date();
@@ -144,14 +145,14 @@ fetch("/api/request-photos", {
                 ii.setAttribute("loading", "lazy");
                 ii.style.height = "225px" // make lazy loading work ?
 
-                if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
+                if (k2.endsWith(".heic") || k2.endsWith(".heif")|| videoFileTypes.includes(k2.split(".").pop())) {
                     ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
                 } else ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                 img.appendChild(ii);
 
                 ii.addEventListener("load", () => {
                     setTimeout(() => {
-                        if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
+                        if (k2.endsWith(".heic") || k2.endsWith(".heif")|| videoFileTypes.includes(k2.split(".").pop())) {
                             ii.src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
                         } else ii.src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                     }, 800)
@@ -215,7 +216,7 @@ fetch("/api/request-photos", {
                                 navigate("/photo/" + id, ii.src.split("/").pop())
                                 document.querySelector("#photo-view").style.display = "block"
 
-                                if (k2.endsWith(".heic") || k2.endsWith(".heif")) {
+                                if (k2.endsWith(".heic") || k2.endsWith(".heif") || videoFileTypes.includes(k2.split(".").pop())) {
                                     console.log("ends with")
                                     document.querySelector("#pv-img").src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                                 } else document.querySelector("#pv-img").src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`

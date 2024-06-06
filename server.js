@@ -56,10 +56,10 @@ const writeMetadata = () => {
     fs.writeFileSync(path.join(uploadDestination + "metadata.json"), JSON.stringify(photoMetadata), "utf8");
 }
 
-const mime = require('mime');
+const mime = require('mime-types');
 
 function isVideo(filePath) {
-  const mimeType = mime.getType(filePath);
+  const mimeType = mime.lookup(filePath);
 
   if (!mimeType) return false
 
@@ -186,11 +186,11 @@ app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
                 })();
             } else writeData()
 
-            function writeData() {
+            async function writeData() {
                 const fVideo = isVideo(finalFilePath)
 
                 if (fVideo) {
-                    generateVideoThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName), 144, 31); // buffer
+                    await generateVideoThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName)); // buffer
 
                     ffmpeg.ffprobe(finalFilePath, (err, metadata) => {
                         console.log(metadata);
@@ -200,7 +200,8 @@ app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
 
                         var m = metadata.streams[0];
 
-                        generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), m.height || 1080, 25); // thumbnail
+                       // generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName)); // thumbnail
+                        fs.copySync(path.join(__dirname, "buffers", fileName.replace(/\.[^/.]+$/, ".jpeg")), path.join(__dirname, "thumbnails", fileName.replace(/\.[^/.]+$/, ".jpeg")))
 
                         photoMetadata[pds][fileName] = {
                             uploaded: new Date(),
