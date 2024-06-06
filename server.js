@@ -7,7 +7,7 @@ const multer = require('multer');
 const exifr = require('exifr');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
-const { generateThumbnail } = require("./thumbnail");
+const { generateThumbnail, generateVideoThumbnail } = require("./thumbnail");
 const { promisify } = require('util');
 const convert = require('heic-convert');
 const Crypto = require("crypto-js")
@@ -54,6 +54,37 @@ else {
 
 const writeMetadata = () => {
     fs.writeFileSync(path.join(uploadDestination + "metadata.json"), JSON.stringify(photoMetadata), "utf8");
+}
+
+const mime = require('mime');
+
+function isVideo(filePath) {
+  const mimeType = mime.getType(filePath);
+
+  if (!mimeType) return false
+
+  const photoMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/bmp',
+    'image/webp',
+    'image/tiff',
+    'image/svg+xml'
+  ];
+
+  const videoMimeTypes = [
+    'video/mp4',
+    'video/mpeg',
+    'video/quicktime',
+    'video/x-msvideo',
+    'video/x-ms-wmv',
+    'video/x-flv',
+    'video/webm',
+    'video/ogg'
+  ];
+
+  return videoMimeTypes.includes(mimeType)
 }
 
 Date.prototype.subtractDays = function (days) {
@@ -156,6 +187,34 @@ app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
             } else writeData()
 
             function writeData() {
+                const fVideo = isVideo(finalFilePath)
+
+                if (fVideo) {
+                    generateVideoThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName), 144, 31); // buffer
+
+                    ffmpeg.ffprobe(finalFilePath, (err, metadata) => {
+                        console.log(metadata);
+                        const photoDate = new Date();
+                        const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
+                        if (!photoMetadata[pds]) photoMetadata[pds] = {};
+
+                        var m = metadata.streams[0];
+
+                        generateThumbnail(finalFilePath, path.join(__dirname, "thumbnails", fileName), m.height || 1080, 25); // thumbnail
+
+                        photoMetadata[pds][fileName] = {
+                            uploaded: new Date(),
+                            width: m.width,
+                            height: m.height,
+                            megapixels: calculateMegapixels(m.width, m.height),
+
+                        }
+
+                        writeMetadata()
+                    });
+                    return
+                }
+
                 generateThumbnail(finalFilePath, path.join(__dirname, "buffers", fileName), 144, 31); // buffer
 
                 exifr.parse(finalFilePath)
@@ -215,24 +274,6 @@ app.post('/upload', verifyToken, upload.single('file'), async (req, res) => {
                     .catch((err) => {
                         console.error(err)
                         return
-                        ffmpeg.ffprobe(finalFilePath, (err, metadata) => {
-                            console.log(metadata);
-                            const photoDate = new Date();
-                            const pds = `${photoDate.getMonth() + 1}/${photoDate.getDate()}/${photoDate.getFullYear()}`
-                            if (!photoMetadata[pds]) photoMetadata[pds] = {};
-
-                            var m = metadata.streams[0];
-
-                            photoMetadata[pds][fileName] = {
-                                uploaded: new Date(),
-                                width: m.width,
-                                height: m.height,
-                                megapixels: calculateMegapixels(m.width, m.height),
-
-                            }
-
-                            writeMetadata()
-                        });
                     })
             }
         } else {

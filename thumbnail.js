@@ -2,7 +2,6 @@ const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
 const path = require('path');
 
-// Set the path to the FFmpeg binary
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 /**
@@ -28,7 +27,25 @@ function generateThumbnail(inputPath, outputPath, height, quality) {
     .run();
 }
 
-module.exports = { generateThumbnail: generateThumbnail }
+function generateVideoThumbnail(inputPath, outputPath, height, quality) {
+  ffmpeg(inputPath)
+    .screenshots({
+      timestamps: ['0'],
+      filename: outputPath.replace(/\.[^/.]+$/, ".jpeg"),
+      folder: '.',
+      size: `?x${height}`,
+      quality: quality
+    })
+    .on('end', () => {
+      console.log('Thumbnail generated successfully');
+    })
+    .on('error', (err) => {
+      console.error('Error generating thumbnail:', err);
+    });
+}
+
+
+module.exports = { generateThumbnail: generateThumbnail, generateVideoThumbnail: generateVideoThumbnail }
 
 const inputImagePath = path.resolve(__dirname, 'uploads/IMG_8216.jpeg');
 const outputThumbnailPath = path.resolve(__dirname, 'thumbnail.jpg'); 
