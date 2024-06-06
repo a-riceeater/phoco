@@ -146,14 +146,14 @@ fetch("/api/request-photos", {
                 ii.style.height = "225px" // make lazy loading work ?
 
                 if (k2.endsWith(".heic") || k2.endsWith(".heif")|| videoFileTypes.includes(k2.split(".").pop())) {
-                    ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
+                    ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                 } else ii.src = `/buffers/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                 img.appendChild(ii);
 
                 ii.addEventListener("load", () => {
                     setTimeout(() => {
                         if (k2.endsWith(".heic") || k2.endsWith(".heif")|| videoFileTypes.includes(k2.split(".").pop())) {
-                            ii.src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`, ii
+                            ii.src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                         } else ii.src = `/thumbnails/${k2.replace(/\.[^/.]+$/, ".jpeg")}`
                     }, 800)
                 }, { once: true })
