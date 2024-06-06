@@ -92,13 +92,13 @@ function verifyToken(req, res, next) {
         else return res.redirect("/auth/login")
         return
     }
-    function auth() {
-        const userData = tokens[token];
+    function auth(t) {
+        const userData = tokens[t];
         res.username = userData.username;
         res.name = userData.name;
         next()
     }
-    auth();
+    auth(token);
 }
 
 function authAlready(req, res, next) {
