@@ -229,6 +229,11 @@ fetch("/api/request-photos", {
                                             document.querySelector("#pv-img").src = `/photos/${k2.replace(/\.[^/.]+$/, ".png")}`
                                         } else document.querySelector("#pv-img").src = `/photos/${k2}`
 
+                                        if (videoFileTypes.includes(k2.split(".").pop())) {
+                                            document.querySelector("#pv-video").src = `/photos/${k2}`
+                                            return
+                                        }
+
                                         let scale = 1;
                                         const zoomSpeed = 0.1;
 
