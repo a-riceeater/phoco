@@ -101,7 +101,14 @@ function verifyToken(req, res, next) {
 
 function authAlready(req, res, next) {
     const token = req.cookies.token;
-    if (token && tokens[token]) return res.redirect("/");
+    if (token && tokens[token]) { 
+        if (!req.headers.authentication) return res.redirect("/"); 
+        var t = req.headers.authentication.split(" ").pop()
+        if (!t) return next()
+        if (tokens[t]) return res.redirect("/")
+        else next()
+        return
+    }
     next();
 }
 
