@@ -83,10 +83,10 @@ function verifyToken(req, res, next) {
     if (dev) return next();
     const token = req.cookies.token;
     if (!token || !tokens[token]) {
-        console.log(req.headers.authentication)
-        if (!req.headers.authentication) return res.redirect("/auth/login");
-        console.log(req.headers.authentication)
-        var t = req.headers.authentication.split(" ").pop()
+        console.log(req.headers.authorization)
+        if (!req.headers.authorization) return res.redirect("/auth/login");
+        console.log(req.headers.authorization)
+        var t = req.headers.authorization.split(" ").pop()
         if (!t) return res.redirect("/auth/login")
         if (tokens[t]) auth()
         return
@@ -103,8 +103,8 @@ function verifyToken(req, res, next) {
 function authAlready(req, res, next) {
     const token = req.cookies.token;
     if (token && tokens[token]) { 
-        if (!req.headers.authentication) return res.redirect("/"); 
-        var t = req.headers.authentication.split(" ").pop()
+        if (!req.headers.authorization) return res.redirect("/"); 
+        var t = req.headers.authorization.split(" ").pop()
         if (!t) return next()
         if (tokens[t]) return res.redirect("/")
         else next()
