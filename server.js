@@ -83,9 +83,7 @@ function verifyToken(req, res, next) {
     if (dev) return next();
     const token = req.cookies.token;
     if (!token || !tokens[token]) {
-        console.log(req.headers.authorization)
         if (!req.headers.authorization) return res.redirect("/auth/login");
-        console.log(req.headers.authorization)
         var t = req.headers.authorization.split(" ").pop()
         if (!t) return res.redirect("/auth/login")
         if (tokens[t]) auth(t)
