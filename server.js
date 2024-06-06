@@ -89,6 +89,7 @@ function verifyToken(req, res, next) {
         var t = req.headers.authorization.split(" ").pop()
         if (!t) return res.redirect("/auth/login")
         if (tokens[t]) auth()
+        else return res.redirect("/")
         return
     }
     function auth() {
