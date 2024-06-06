@@ -660,6 +660,10 @@ body {
     max-width: 100%;
 }
 
+#pv-video {
+    display: none;
+}
+
 #pv-info {
     position: absolute;
     width: 350px;

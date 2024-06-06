@@ -214,6 +214,12 @@ fetch("/api/request-photos", {
                         ii.src.split("/").pop().SHA256()
                             .then((id) => {
                                 navigate("/photo/" + id, ii.src.split("/").pop())
+
+                                if (!videoFileTypes.includes(k2.split(".").pop())) {
+                                    document.querySelector("#pv-video").style.display = "none"
+                                    document.querySelector("#pv-img").style.display = "block"
+                                }
+
                                 document.querySelector("#photo-view").style.display = "block"
 
                                 if (k2.endsWith(".heic") || k2.endsWith(".heif") || videoFileTypes.includes(k2.split(".").pop())) {
@@ -230,6 +236,8 @@ fetch("/api/request-photos", {
                                         } else document.querySelector("#pv-img").src = `/photos/${k2}`
 
                                         if (videoFileTypes.includes(k2.split(".").pop())) {
+                                            document.querySelector("#pv-img").style.display = "none"
+                                            document.querySelector("#pv-video").style.display = "block"
                                             document.querySelector("#pv-video").src = `/photos/${k2}`
                                             return
                                         }
