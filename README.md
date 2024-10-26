@@ -15,13 +15,19 @@ If you see this right now, check out my other repositories! Also, I am currently
 - thumbnail buffering (loads smaller image before larger image displayed to save loading)
 - transcoding
 
-example desktop image: ![image](https://github.com/user-attachments/assets/a6b1cd0f-408f-4f97-ba79-8b9197e3565b)
+example desktop image: 
+![image](https://github.com/user-attachments/assets/a6b1cd0f-408f-4f97-ba79-8b9197e3565b)
 
-example desktop info tab: ![image](https://github.com/user-attachments/assets/6db54669-19a5-4293-bc34-8727cab9e89e)
+example desktop info tab: 
+![image](https://github.com/user-attachments/assets/6db54669-19a5-4293-bc34-8727cab9e89e)
 
-example mobile image: ![image](https://github.com/user-attachments/assets/13680290-c259-4645-b618-6e462c07f453)
+example mobile image: 
 
-example mobile info tab: ![image](https://github.com/user-attachments/assets/73c357af-1ccc-430f-94f5-f98722223456)
+![image](https://github.com/user-attachments/assets/13680290-c259-4645-b618-6e462c07f453)
+
+example mobile info tab: 
+
+![image](https://github.com/user-attachments/assets/73c357af-1ccc-430f-94f5-f98722223456)
 
 
 ## Features that I planned on adding
