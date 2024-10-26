@@ -1,0 +1,37 @@
+{
+  "name": "com.example.phoco",
+  "displayName": "Phoco",
+  "version": "1.0.0",
+  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cordova-ios": "^7.1.0",
+    "cordova-plugin-advanced-http": "^3.3.1",
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-photos": "^1.0.9",
+    "cordova.plugins.diagnostic": "^7.1.4"
+  },
+  "cordova": {
+    "platforms": [
+      "ios"
+    ],
+    "plugins": {
+      "cordova-plugin-advanced-http": {},
+      "cordova-plugin-photos": {},
+      "cordova.plugins.diagnostic": {}
+    }
+  },
+  "dependencies": {
+    "cordova-gallery-access": "^3.0.3",
+    "cordova-plugin-file": "6.0.2",
+    "glob": "^10.4.1"
+  }
+}
